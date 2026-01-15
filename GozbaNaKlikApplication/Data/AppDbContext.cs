@@ -12,7 +12,7 @@ public class AppDbContext:DbContext
     public DbSet<AdministratorProfile> Administrators { get; set; }
     public DbSet<OwnerProfile> Owners { get; set; }
     public DbSet<CustomerProfile> Customers { get; set; }
-    public DbSet<CourierProfile> Courses { get; set; }
+    public DbSet<CourierProfile> Couriers { get; set; }
 
     //TODO: Definisati seed za dodavanje 3 administratora
     

@@ -13,6 +13,11 @@ public class User
 
     public UserRole Role { get; set; } = UserRole.Customer;
 
+    public AdministratorProfile AdministratorProfile { get; set; }
+    public CourierProfile CourierProfile { get; set; }
+    public CustomerProfile CustomerProfile { get; set; }
+    public OwnerProfile OwnerProfile { get; set; }
+
     public bool IsValid()
     {
         return !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(PasswordHash);
