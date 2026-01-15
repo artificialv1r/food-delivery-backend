@@ -7,7 +7,14 @@ public class User
     public int Id { get; set; }
     public required string Username { get; set; }
     public required string PasswordHash { get; set; }
-    
-    public UserRole Role { get; set; }
-    //TODO: Dodati ostala svojstva korisnika
+    public string? Name { get; set; }
+    public string? Surname { get; set; }
+    public string? Email { get; set; }
+
+    public UserRole Role { get; set; } = UserRole.Customer;
+
+    public bool IsValid()
+    {
+        return !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(PasswordHash);
+    }
 }
