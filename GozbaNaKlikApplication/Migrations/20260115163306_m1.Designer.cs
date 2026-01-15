@@ -2,6 +2,7 @@
 using GozbaNaKlikApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GozbaNaKlikApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260115163306_m1")]
+    partial class m1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,8 +37,7 @@ namespace GozbaNaKlikApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Administrators");
                 });
@@ -56,10 +58,9 @@ namespace GozbaNaKlikApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Couriers");
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.CustomerProfile", b =>
@@ -75,8 +76,7 @@ namespace GozbaNaKlikApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Customers");
                 });
@@ -94,8 +94,7 @@ namespace GozbaNaKlikApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Owners");
                 });
@@ -135,61 +134,46 @@ namespace GozbaNaKlikApplication.Migrations
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.AdministratorProfile", b =>
                 {
-                    b.HasOne("GozbaNaKlikApplication.Models.User", "User")
-                        .WithOne("AdministratorProfile")
-                        .HasForeignKey("GozbaNaKlikApplication.Models.AdministratorProfile", "UserId")
+                    b.HasOne("GozbaNaKlikApplication.Models.User", "Administrator")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Administrator");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.CourierProfile", b =>
                 {
-                    b.HasOne("GozbaNaKlikApplication.Models.User", "User")
-                        .WithOne("CourierProfile")
-                        .HasForeignKey("GozbaNaKlikApplication.Models.CourierProfile", "UserId")
+                    b.HasOne("GozbaNaKlikApplication.Models.User", "Courier")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Courier");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.CustomerProfile", b =>
                 {
-                    b.HasOne("GozbaNaKlikApplication.Models.User", "User")
-                        .WithOne("CustomerProfile")
-                        .HasForeignKey("GozbaNaKlikApplication.Models.CustomerProfile", "UserId")
+                    b.HasOne("GozbaNaKlikApplication.Models.User", "Customer")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.OwnerProfile", b =>
                 {
-                    b.HasOne("GozbaNaKlikApplication.Models.User", "User")
-                        .WithOne("OwnerProfile")
-                        .HasForeignKey("GozbaNaKlikApplication.Models.OwnerProfile", "UserId")
+                    b.HasOne("GozbaNaKlikApplication.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("GozbaNaKlikApplication.Models.User", b =>
-                {
-                    b.Navigation("AdministratorProfile")
-                        .IsRequired();
-
-                    b.Navigation("CourierProfile")
-                        .IsRequired();
-
-                    b.Navigation("CustomerProfile")
-                        .IsRequired();
-
-                    b.Navigation("OwnerProfile")
-                        .IsRequired();
+                    b.Navigation("Owner");
                 });
 #pragma warning restore 612, 618
         }

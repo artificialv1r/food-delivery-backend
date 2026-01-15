@@ -9,7 +9,11 @@ public class AppDbContext:DbContext
     
     //TODO: Definisati odgovarajuce DbSetove za postojece modele.
     public DbSet<User> Users { get; set; }
-    
+    public DbSet<AdministratorProfile> Administrators { get; set; }
+    public DbSet<OwnerProfile> Owners { get; set; }
+    public DbSet<CustomerProfile> Customers { get; set; }
+    public DbSet<CourierProfile> Couriers { get; set; }
+
     //TODO: Definisati seed za dodavanje 3 administratora
     
 }
