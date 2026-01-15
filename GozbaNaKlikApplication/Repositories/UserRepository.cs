@@ -12,4 +12,5 @@ public class UserRepository
     }
     
     //TODO: Dodati metode za rad sa korisnicima (npr. GetAll, GetOne, Add, Update, Delete)
+    
 }
