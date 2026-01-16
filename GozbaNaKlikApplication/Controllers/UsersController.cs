@@ -1,4 +1,5 @@
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,4 +17,11 @@ public class UsersController:ControllerBase
     }
 
     //TODO: Definisati API endpoint-e (npr. [HttpGet], [HttpPost], [HttpPut], [HttpDelete])
+
+    [HttpPost]
+    public async Task<IActionResult> AddNewUserAsync(User user)
+    {
+        return Ok(await _userService.AddNewUserAsync(user));
+
+    }
 }
