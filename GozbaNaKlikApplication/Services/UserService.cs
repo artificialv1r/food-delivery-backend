@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,17 +12,19 @@ namespace GozbaNaKlikApplication.Services;
 public class UserService
 {
     private readonly UserRepository _userRepository;
+    private readonly CustomerService _customerService;
 
     public UserService(AppDbContext context)
     {
         _userRepository = new UserRepository(context);
+        _customerService = new CustomerService(context);
     }
-    
-    
+
+
     public async Task<User> Login(string username, string password)
     {
         User user = await _userRepository.GetByUsername(username);
-        
+
         if (user == null)
         {
             throw new Exception("Invalid username or password");
@@ -36,7 +39,7 @@ public class UserService
 
         return user;
     }
-    
+
     public string GenerateJwtToken(User user)
     {
         var claims = new List<Claim>
@@ -62,16 +65,25 @@ public class UserService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
+
     //TODO: Dodati servise za korisnike (npr. GetAll, GetOne, Create, Update, Delete)
 
-    public async Task<User> AddNewUserAsync(User user)
+    public async Task<User> AddUserAsync(User user)
     {
-        User newUser = await _userRepository.AddAsync(user);
-        if(newUser == null)
+        var existingUser = await _userRepository.GetByUsername(user.Username);
+
+        if (existingUser != null)
         {
-            throw new Exception("Something went wrong. You sholud try again.");
+            throw new Exception("This username already exisist.");
         }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
+        User newUser = await _userRepository.AddNewUserAsync(user);
+
+        CustomerProfile customer = new CustomerProfile { UserId = newUser.Id };
+        await _customerService.AddCustomerAsync(customer);
+
         return newUser;
     }
 }

@@ -38,6 +38,16 @@ public class AppDbContext : DbContext
             .HasOne(u => u.CourierProfile)
             .WithOne(c => c.User)
             .HasForeignKey<CourierProfile>(c => c.UserId);
+
+        //Postavljamo da nam strani kljuc ujedno bude i primarni
+        modelBuilder.Entity<CustomerProfile>()
+            .HasKey(c => c.UserId);
+        modelBuilder.Entity<AdministratorProfile>()
+            .HasKey(a => a.UserId);
+        modelBuilder.Entity<OwnerProfile>()
+            .HasKey(o => o.UserId);
+        modelBuilder.Entity<CourierProfile>()
+            .HasKey(c => c.UserId);
     }
 
 }

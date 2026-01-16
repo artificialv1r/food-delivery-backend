@@ -12,11 +12,18 @@ public class UserRepository
     {
         _context = context;
     }
-    
+
     //TODO: Dodati metode za rad sa korisnicima (npr. GetAll, GetOne, Add, Update, Delete)
 
     public async Task<User?> GetByUsername(string username)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+    }
+
+    public async Task<User> AddNewUserAsync(User user)
+    {
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return user;
     }
 }

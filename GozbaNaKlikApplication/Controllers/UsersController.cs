@@ -10,13 +10,34 @@ namespace GozbaNaKlikApplication.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UsersController:ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly UserService _userService;
 
     public UsersController(AppDbContext context)
     {
         _userService = new UserService(context);
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Registration(User user)
+    {
+        if (!user.IsValid())
+        {
+            return BadRequest("Username and password are required.");
+        }
+
+        var newUser = await _userService.AddUserAsync(user);
+
+        return Ok(new
+        {
+            newUser.Id,
+            newUser.Username,
+            newUser.Email,
+            newUser.Name,
+            newUser.Surname,
+            newUser.Role
+        });
     }
 
     [HttpPost("login")]
@@ -29,12 +50,12 @@ public class UsersController:ControllerBase
         try
         {
             User user = await _userService.Login(request.Username, request.Password);
-            
+
             if (user == null)
             {
                 return BadRequest("Username or password is incorrect");
             }
-            
+
             var token = _userService.GenerateJwtToken(user);
             return Ok(new
             {
@@ -44,12 +65,12 @@ public class UsersController:ControllerBase
                 token
             });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             return Unauthorized("Username or password is incorrect" + e.Message);
-        } 
+        }
     }
-    
+
 
     [Authorize]
     [HttpGet("me")]
