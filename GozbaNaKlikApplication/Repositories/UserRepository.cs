@@ -1,5 +1,6 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories;
 
@@ -14,11 +15,8 @@ public class UserRepository
     
     //TODO: Dodati metode za rad sa korisnicima (npr. GetAll, GetOne, Add, Update, Delete)
 
-    public async Task<User> AddAsync(User user)
+    public async Task<User?> GetByUsername(string username)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return user;
+        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
-    
 }
