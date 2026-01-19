@@ -12,7 +12,7 @@ public class User
     public string? Surname { get; set; }
     public string? Email { get; set; }
 
-    [JsonIgnore]
+   
     public UserRole Role { get; set; } = UserRole.Customer;
 
     [JsonIgnore]
