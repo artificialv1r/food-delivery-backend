@@ -2,6 +2,7 @@
 using GozbaNaKlikApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GozbaNaKlikApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119175456_m4")]
+    partial class m4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,7 +119,7 @@ namespace GozbaNaKlikApplication.Migrations
                             Id = 1,
                             Email = "aleksandarpopov@gmail.com",
                             Name = "Aleksandar",
-                            PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy",
+                            PasswordHash = "admin1",
                             Role = 2,
                             Surname = "Popov",
                             Username = "Admin1"
@@ -126,7 +129,7 @@ namespace GozbaNaKlikApplication.Migrations
                             Id = 2,
                             Email = "nikolapopovski@gmail.com",
                             Name = "Nikola",
-                            PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy",
+                            PasswordHash = "admin2",
                             Role = 2,
                             Surname = "Popovski",
                             Username = "Admin2"
@@ -136,7 +139,7 @@ namespace GozbaNaKlikApplication.Migrations
                             Id = 3,
                             Email = "petarnikolic@gmail.com",
                             Name = "Petar",
-                            PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy",
+                            PasswordHash = "admin3",
                             Role = 2,
                             Surname = "Nikolic",
                             Username = "Admin3"

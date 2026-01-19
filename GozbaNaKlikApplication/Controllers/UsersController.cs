@@ -31,12 +31,8 @@ public class UsersController : ControllerBase
 
         return Ok(new
         {
-            newUser.Id,
-            newUser.Username,
-            newUser.Email,
-            newUser.Name,
-            newUser.Surname,
-            newUser.Role
+            id = newUser.Id,
+            message = "User successfully registered."
         });
     }
 
