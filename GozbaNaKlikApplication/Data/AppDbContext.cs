@@ -48,6 +48,15 @@ public class AppDbContext : DbContext
             .HasKey(o => o.UserId);
         modelBuilder.Entity<CourierProfile>()
             .HasKey(c => c.UserId);
-    }
 
+        modelBuilder.Entity<User>()
+            .HasData(new User { Id = 1, Username = "Admin1", PasswordHash = "admin1", Name = "Aleksandar", Surname = "Popov", Email = "aleksandarpopov@gmail.com", Role = Models.Enums.UserRole.Administrator },
+                     new User { Id = 2, Username = "Admin2", PasswordHash = "admin2", Name = "Nikola", Surname = "Popovski", Email = "nikolapopovski@gmail.com", Role = Models.Enums.UserRole.Administrator },
+                     new User { Id = 3, Username = "Admin3", PasswordHash = "admin3", Name = "Petar", Surname = "Nikolic", Email = "petarnikolic@gmail.com", Role = Models.Enums.UserRole.Administrator });
+
+        modelBuilder.Entity<AdministratorProfile>()
+            .HasData(new AdministratorProfile { UserId = 1 },
+                     new AdministratorProfile { UserId = 2 },
+                     new AdministratorProfile { UserId = 3 });
+    }
 }
