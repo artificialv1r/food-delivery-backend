@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<OwnerProfile> Owners { get; set; }
     public DbSet<CustomerProfile> Customers { get; set; }
     public DbSet<CourierProfile> Couriers { get; set; }
+    public DbSet<Restaurant> Restaurants { get; set; }
+    public DbSet<Meal> Meals { get; set; }
 
     //TODO: Definisati seed za dodavanje 3 administratora
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,7 +50,20 @@ public class AppDbContext : DbContext
             .HasKey(o => o.UserId);
         modelBuilder.Entity<CourierProfile>()
             .HasKey(c => c.UserId);
-
+        
+        //Povezivanje modela Restoran i Jelo:
+        modelBuilder.Entity<Restaurant>()
+            .HasOne(r => r.Owner)
+            .WithMany()
+            .HasForeignKey(r => r.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Meal>()
+            .HasOne(m => m.Restaurant)
+            .WithMany(r => r.Meals)
+            .HasForeignKey(r => r.RestaurantId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
         modelBuilder.Entity<User>()
             .HasData(new User { Id = 1, Username = "Admin1", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Aleksandar", Surname = "Popov", Email = "aleksandarpopov@gmail.com", Role = Models.Enums.UserRole.Administrator },
                      new User { Id = 2, Username = "Admin2", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Nikola", Surname = "Popovski", Email = "nikolapopovski@gmail.com", Role = Models.Enums.UserRole.Administrator },
