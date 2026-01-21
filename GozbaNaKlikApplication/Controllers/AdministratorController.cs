@@ -1,5 +1,6 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Admin;
+using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Services;
@@ -14,10 +15,12 @@ namespace GozbaNaKlikApplication.Controllers;
 public class AdministratorController:ControllerBase
 {
     private readonly AdministratorService _administratorService;
+    private readonly RestaurantService _restaurantService;
 
     public AdministratorController(AppDbContext context)
     {
         _administratorService = new AdministratorService(context);
+        _restaurantService = new RestaurantService(context);
     }
     
     [Authorize (Roles =  "Administrator")]
@@ -53,6 +56,27 @@ public class AdministratorController:ControllerBase
         catch (UnauthorizedAccessException ex)
         {
             return Unauthorized("You must be logged in as an Administrator to perform this action.");
+        }
+    }
+
+    [Authorize (Roles =  "Administrator")]
+    [HttpPost("restaurants")]
+    public async Task<IActionResult> CreateNewRestaurant([FromBody] AddRestaurantDto dto)
+    {
+        try
+        {
+            Restaurant restaurant = await _restaurantService.CreateRestaurantAsync(dto);
+            return Ok(new
+            {
+                restaurant.Id,
+                restaurant.Name,
+                restaurant.Description,
+                restaurant.OwnerId
+            });
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }

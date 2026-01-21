@@ -54,7 +54,7 @@ public class AppDbContext : DbContext
         //Povezivanje modela Restoran i Jelo:
         modelBuilder.Entity<Restaurant>()
             .HasOne(r => r.Owner)
-            .WithMany()
+            .WithMany(o => o.MyRestaurants)
             .HasForeignKey(r => r.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
         
