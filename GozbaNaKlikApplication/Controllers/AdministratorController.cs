@@ -82,7 +82,7 @@ public class AdministratorController:ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut("restaurants/{id}")]
-    public async Task<IActionResult> UpdateRestaurant(int id, AddRestaurantDto dto)
+    public async Task<IActionResult> UpdateRestaurant(int id, UpdateRestaurantDto dto)
     {
         try
         {
