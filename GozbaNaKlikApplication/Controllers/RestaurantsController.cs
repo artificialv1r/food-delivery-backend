@@ -18,6 +18,7 @@ public class RestaurantsController : ControllerBase
         _restaurantService = new RestaurantService(context);
     }
     
+    [Authorize(Roles = "Administrator,Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRestaurant(int id, UpdateRestaurantDto dto)
     {
