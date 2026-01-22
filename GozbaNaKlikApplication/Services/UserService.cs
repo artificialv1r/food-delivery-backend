@@ -70,6 +70,11 @@ public class UserService
 
     public async Task<User> AddUserAsync(User user)
     {
+        if (user.Role != UserRole.Customer)
+        {
+            throw new Exception("Invalid role for user registration. ");
+        }
+
         var existingUser = await _userRepository.GetByUsername(user.Username);
 
         if (existingUser != null)
@@ -77,7 +82,8 @@ public class UserService
             throw new Exception("This username already exisist.");
         }
 
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+        var password = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+        user.PasswordHash = password;
 
         User newUser = await _userRepository.AddNewUserAsync(user);
 

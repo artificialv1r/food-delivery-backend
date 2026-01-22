@@ -1,10 +1,11 @@
-using System.Security.Claims;
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GozbaNaKlikApplication.Controllers;
 
@@ -27,6 +28,10 @@ public class UsersController : ControllerBase
             return BadRequest("Username and password are required.");
         }
 
+        if (user.Role != UserRole.Customer)
+        {
+            throw new Exception("Invalid role for user registration. ");
+        }
         var newUser = await _userService.AddUserAsync(user);
 
         return Ok(new
