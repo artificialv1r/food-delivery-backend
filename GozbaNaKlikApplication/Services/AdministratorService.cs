@@ -1,4 +1,5 @@
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Repositories;
@@ -11,31 +12,41 @@ public class AdministratorService
     private readonly UserRepository _userRepository;
     private readonly OwnerService _ownerService;
     private readonly CourierService _courierService;
-    
-    public AdministratorService(AppDbContext context){
+    private readonly AdministratorRepository _administratorRepository;
+
+    public AdministratorService(AppDbContext context)
+    {
         _userRepository = new UserRepository(context);
         _ownerService = new OwnerService(context);
         _courierService = new CourierService(context);
+        _administratorRepository = new AdministratorRepository(context);
     }
-
+    public async Task<List<UserPreviewDto>> GetAllUsers(int page, int pageSize, string orderDirection)
+    {
+        return await _administratorRepository.GetPagedAsync(page, pageSize, orderDirection);
+    }
+    public async Task<int> CountAllUsers()
+    {
+        return await _administratorRepository.CountAllUsersAsync();
+    }
     public async Task<User> RegisterNewUser(User user)
     {
         if (user.Role != UserRole.Owner && user.Role != UserRole.Courier)
         {
             throw new ArgumentException("Invalid role for admin registration");
         }
-        
+
         var existingUser = await _userRepository.GetByUsername(user.Username);
 
         if (existingUser != null)
         {
             throw new InvalidOperationException("This user already exists");
         }
-        
+
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
         User newUser = await _userRepository.AddNewUserAsync(user);
-        
+
         switch (user.Role)
         {
             case UserRole.Owner:
@@ -46,7 +57,7 @@ public class AdministratorService
                 await _courierService.AddCourierAsync(new CourierProfile { UserId = newUser.Id });
                 break;
         }
-        
+
         return newUser;
     }
 }
