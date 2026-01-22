@@ -1,5 +1,6 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories;
 
@@ -17,5 +18,10 @@ public class OwnerRepository
         _context.Owners.Add(owner);
         await _context.SaveChangesAsync();
         return owner;
+    }
+
+    public async Task<OwnerProfile> GetByUserId(int id)
+    {
+        return await _context.Owners.FirstOrDefaultAsync(o => o.UserId == id);
     }
 }
