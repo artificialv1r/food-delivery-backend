@@ -33,4 +33,16 @@ public class RestaurantRepository
         await _context.SaveChangesAsync();
         return restaurant;
     }
+
+    public async Task<bool> DeleteRestaurantAsync(int id)
+    {
+        Restaurant restraurant = await _context.Restaurants.FindAsync(id);
+        if (restraurant == null)
+        {
+            return false;
+        }
+        _context.Remove(restraurant);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

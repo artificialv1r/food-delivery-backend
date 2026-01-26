@@ -62,7 +62,7 @@ public class AppDbContext : DbContext
             .HasOne(m => m.Restaurant)
             .WithMany(r => r.Meals)
             .HasForeignKey(r => r.RestaurantId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
             
         modelBuilder.Entity<User>()
             .HasData(new User { Id = 1, Username = "Admin1", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Aleksandar", Surname = "Popov", Email = "aleksandarpopov@gmail.com", Role = Models.Enums.UserRole.Administrator },
