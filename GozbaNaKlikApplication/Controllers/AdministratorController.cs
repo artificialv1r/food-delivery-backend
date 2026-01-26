@@ -44,11 +44,36 @@ public class AdministratorController : ControllerBase
                 totalCount
             });
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
             return Unauthorized("You must be logged in as an Administrator to perform this action.");
         }
     }
+
+    [Authorize(Roles = "Administrator")]
+    [HttpGet("restaurants")]
+    public async Task<IActionResult> GetAllRestaurants(int page = 1, int pageSize = 5, string orderDirection = "asc")
+    {
+        if (page < 1 || pageSize < 1) { return BadRequest("Page and PageSize must be greater then zero."); }
+
+        try
+        {
+            List<Restaurant> restaurants = await _administratorService.GetAllRestaurants(page, pageSize, orderDirection);
+            int totalCount = await _administratorService.CountAllResturants();
+
+            return Ok(new
+            {
+                Restaurants = restaurants,
+                TotalCount = totalCount
+            });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You must be logged in as an Administrator to perform this action.");
+        }
+    }
+
+
 
     [Authorize(Roles = "Administrator")]
     [HttpPost("users")]
@@ -86,7 +111,7 @@ public class AdministratorController : ControllerBase
         }
     }
 
-    [Authorize (Roles =  "Administrator")]
+    [Authorize(Roles = "Administrator")]
     [HttpPost("restaurants")]
     public async Task<IActionResult> CreateNewRestaurant([FromBody] AddRestaurantDto dto)
     {

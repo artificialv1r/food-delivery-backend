@@ -13,6 +13,7 @@ public class AdministratorService
     private readonly OwnerService _ownerService;
     private readonly CourierService _courierService;
     private readonly AdministratorRepository _administratorRepository;
+  
 
     public AdministratorService(AppDbContext context)
     {
@@ -28,6 +29,15 @@ public class AdministratorService
     public async Task<int> CountAllUsers()
     {
         return await _administratorRepository.CountAllUsersAsync();
+    }
+
+    public async Task<List<Restaurant>> GetAllRestaurants(int page, int pageSize, string orderDirection)
+    {
+        return await _administratorRepository.ShowAllRestaurantsAsync(page, pageSize, orderDirection);
+    }
+    public async Task<int> CountAllResturants()
+    {
+        return await _administratorRepository.CountAllResturantsAsync();
     }
     public async Task<User> RegisterNewUser(User user)
     {
