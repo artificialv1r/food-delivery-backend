@@ -36,7 +36,7 @@ public class RestaurantService
             OwnerId = dto.OwnerId,
             Description = dto.Description,
         };
-        
+
         return await _restaurantRepository.AddNewRestaurantAsync(restaurant);
     }
 
@@ -55,11 +55,23 @@ public class RestaurantService
         {
             throw new ArgumentException("Owner not found");
         }
-        
+
         restaurant.Name = dto.Name;
         restaurant.Description = dto.Description;
         restaurant.OwnerId = dto.OwnerId;
-        
+
         return await _restaurantRepository.UpdateRestaurantAsync(restaurant);
+    }
+
+    public async Task<bool> DeleteRestaurant(int id)
+    {
+        Restaurant restaurant = await _restaurantRepository.GetByIdAsync(id);
+
+        if (restaurant == null)
+        {
+            throw new KeyNotFoundException("Restaurant not found.");
+        }
+
+        return await _restaurantRepository.DeleteRestaurantAsync(id);
     }
 }

@@ -17,7 +17,7 @@ public class RestaurantsController : ControllerBase
     {
         _restaurantService = new RestaurantService(context);
     }
-    
+
     [Authorize(Roles = "Administrator,Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRestaurant(int id, UpdateRestaurantDto dto)
@@ -37,6 +37,20 @@ public class RestaurantsController : ControllerBase
         catch (ArgumentException e)
         {
             return BadRequest(e.Message);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+    [Authorize(Roles = "Administrator")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRestaurant(int id)
+    {
+        try
+        {
+            await _restaurantService.DeleteRestaurant(id);
+            return NoContent();
         }
         catch (KeyNotFoundException e)
         {
