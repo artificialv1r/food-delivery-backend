@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GozbaNaKlikApplication", "GozbaNaKlikApplication\GozbaNaKlikApplication.csproj", "{0655B89C-E167-47CB-817F-740C7B89E079}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GozbaNaKlikApplicationTests", "GozbaNaKlikApplicationTests\GozbaNaKlikApplicationTests.csproj", "{EC45D61B-E026-40CB-8A7B-51748DFC6B52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{0655B89C-E167-47CB-817F-740C7B89E079}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0655B89C-E167-47CB-817F-740C7B89E079}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0655B89C-E167-47CB-817F-740C7B89E079}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC45D61B-E026-40CB-8A7B-51748DFC6B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC45D61B-E026-40CB-8A7B-51748DFC6B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC45D61B-E026-40CB-8A7B-51748DFC6B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC45D61B-E026-40CB-8A7B-51748DFC6B52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
