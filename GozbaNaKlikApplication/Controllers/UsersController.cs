@@ -70,31 +70,12 @@ public class UsersController : ControllerBase
             return Unauthorized("Username or password is incorrect" + e.Message);
         }
     }
-    
+
     [Authorize(Roles = "Administrator")]
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10, string orderDirection = "asc")
+    public async Task<ActionResult<PaginatedList<UserPreviewDto>>> GetAllUsers(int page = 1, int pageSize = 10)
     {
-        if (page < 1 || pageSize < 1)
-        {
-            return BadRequest("Page and PageSize must be greater then zero.");
-        }
-
-        try
-        {
-            List<UserPreviewDto> users = await _userService.GetAllUsers(page, pageSize, orderDirection);
-            int totalCount = await _userService.CountAllUsers();
-
-            return Ok(new
-            {
-                users,
-                totalCount
-            });
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You must be logged in as an Administrator to perform this action.");
-        }
+        return Ok(await _userService.GetAllUsers(page, pageSize));
     }
 
     [Authorize]
