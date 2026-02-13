@@ -14,36 +14,12 @@ namespace GozbaNaKlikApplication.Controllers;
 public class AdministratorController : ControllerBase
 {
     private readonly AdministratorService _administratorService;
-    private readonly RestaurantService _restaurantService;
 
     public AdministratorController(AppDbContext context)
     {
         _administratorService = new AdministratorService(context);
-        _restaurantService = new RestaurantService(context);
     }
-    
-    [Authorize(Roles = "Administrator")]
-    [HttpGet("restaurants")]
-    public async Task<IActionResult> GetAllRestaurants(int page = 1, int pageSize = 5, string orderDirection = "asc")
-    {
-        if (page < 1 || pageSize < 1) { return BadRequest("Page and PageSize must be greater then zero."); }
 
-        try
-        {
-            List<Restaurant> restaurants = await _administratorService.GetAllRestaurants(page, pageSize, orderDirection);
-            int totalCount = await _administratorService.CountAllResturants();
-
-            return Ok(new
-            {
-                Restaurants = restaurants,
-                TotalCount = totalCount
-            });
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You must be logged in as an Administrator to perform this action.");
-        }
-    }
 
     [Authorize(Roles = "Administrator")]
     [HttpPost("users")]
@@ -78,53 +54,6 @@ public class AdministratorController : ControllerBase
         catch (UnauthorizedAccessException ex)
         {
             return Unauthorized("You must be logged in as an Administrator to perform this action.");
-        }
-    }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpPost("restaurants")]
-    public async Task<IActionResult> CreateNewRestaurant([FromBody] AddRestaurantDto dto)
-    {
-        try
-        {
-            Restaurant restaurant = await _restaurantService.CreateRestaurantAsync(dto);
-            return Ok(new
-            {
-                restaurant.Id,
-                restaurant.Name,
-                restaurant.Description,
-                restaurant.OwnerId
-            });
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpPut("restaurants/{id}")]
-    public async Task<IActionResult> UpdateRestaurant(int id, UpdateRestaurantDto dto)
-    {
-        try
-        {
-            Restaurant updatedRestaurant = await _restaurantService.UpdateRestaurantAsync(id, dto);
-
-            return Ok(new
-            {
-                updatedRestaurant.Id,
-                updatedRestaurant.Name,
-                updatedRestaurant.Description,
-                updatedRestaurant.OwnerId
-            });
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-        catch (KeyNotFoundException e)
-        {
-            return NotFound(e.Message);
         }
     }
 }

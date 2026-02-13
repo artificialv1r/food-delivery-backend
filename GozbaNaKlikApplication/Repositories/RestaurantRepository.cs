@@ -1,10 +1,11 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories;
 
-public class RestaurantRepository
+public class RestaurantRepository : IRestaurantRepository
 {
     private readonly AppDbContext _context;
 
@@ -13,6 +14,26 @@ public class RestaurantRepository
         _context = context;
     }
 
+    public async Task<List<Restaurant>> ShowAllRestaurantsAsync(int page, int pageSize, string orderDirection)
+    {
+        IQueryable<Restaurant> query = _context.Restaurants
+            .Include(o => o.Owner)
+            .ThenInclude(u => u.User);
+
+        query = orderDirection == "desc"
+            ? query.OrderByDescending(r => r.Name)
+            : query.OrderBy(r => r.Name);
+
+        query = query.Skip(pageSize * (page - 1))
+                     .Take(pageSize);
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<int> CountAllResturantsAsync()
+    {
+        return await _context.Restaurants.CountAsync();
+    }
     public async Task<Restaurant> AddNewRestaurantAsync(Restaurant restaurant)
     {
         _context.Restaurants.Add(restaurant);

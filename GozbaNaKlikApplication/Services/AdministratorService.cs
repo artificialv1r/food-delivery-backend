@@ -23,14 +23,6 @@ public class AdministratorService
         _administratorRepository = new AdministratorRepository(context);
     }
 
-    public async Task<List<Restaurant>> GetAllRestaurants(int page, int pageSize, string orderDirection)
-    {
-        return await _administratorRepository.ShowAllRestaurantsAsync(page, pageSize, orderDirection);
-    }
-    public async Task<int> CountAllResturants()
-    {
-        return await _administratorRepository.CountAllResturantsAsync();
-    }
     public async Task<User> RegisterNewUser(User user)
     {
         if (user.Role != UserRole.Owner && user.Role != UserRole.Courier)

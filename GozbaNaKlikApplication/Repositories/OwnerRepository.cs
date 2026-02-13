@@ -1,13 +1,14 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories;
 
-public class OwnerRepository
+public class OwnerRepository : IOwnerRepository
 {
     private readonly AppDbContext _context;
-    
+
     public OwnerRepository(AppDbContext context)
     {
         _context = context;
