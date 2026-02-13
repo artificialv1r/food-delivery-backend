@@ -1,12 +1,10 @@
 using GozbaNaKlikApplication.Data;
-using GozbaNaKlikApplication.DTOs.Admin;
 using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GozbaNaKlikApplication.Controllers;
@@ -23,33 +21,7 @@ public class AdministratorController : ControllerBase
         _administratorService = new AdministratorService(context);
         _restaurantService = new RestaurantService(context);
     }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpGet]
-    public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10, string orderDirection = "asc")
-    {
-        if (page < 1 || pageSize < 1)
-        {
-            return BadRequest("Page and PageSize must be greater then zero.");
-        }
-
-        try
-        {
-            List<UserPreviewDto> users = await _administratorService.GetAllUsers(page, pageSize, orderDirection);
-            int totalCount = await _administratorService.CountAllUsers();
-
-            return Ok(new
-            {
-                users,
-                totalCount
-            });
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You must be logged in as an Administrator to perform this action.");
-        }
-    }
-
+    
     [Authorize(Roles = "Administrator")]
     [HttpGet("restaurants")]
     public async Task<IActionResult> GetAllRestaurants(int page = 1, int pageSize = 5, string orderDirection = "asc")
@@ -72,8 +44,6 @@ public class AdministratorController : ControllerBase
             return Unauthorized("You must be logged in as an Administrator to perform this action.");
         }
     }
-
-
 
     [Authorize(Roles = "Administrator")]
     [HttpPost("users")]
