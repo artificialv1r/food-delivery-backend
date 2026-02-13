@@ -1,11 +1,10 @@
-using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
-using GozbaNaKlikApplication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using GozbaNaKlikApplication.Services.Interfaces;
 
 namespace GozbaNaKlikApplication.Controllers;
 
@@ -13,11 +12,11 @@ namespace GozbaNaKlikApplication.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UsersController(AppDbContext context)
+    public UsersController(IUserService userService)
     {
-        _userService = new UserService(context);
+        _userService = userService;
     }
 
     [HttpPost("register")]
@@ -71,7 +70,32 @@ public class UsersController : ControllerBase
             return Unauthorized("Username or password is incorrect" + e.Message);
         }
     }
+    
+    [Authorize(Roles = "Administrator")]
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10, string orderDirection = "asc")
+    {
+        if (page < 1 || pageSize < 1)
+        {
+            return BadRequest("Page and PageSize must be greater then zero.");
+        }
 
+        try
+        {
+            List<UserPreviewDto> users = await _userService.GetAllUsers(page, pageSize, orderDirection);
+            int totalCount = await _userService.CountAllUsers();
+
+            return Ok(new
+            {
+                users,
+                totalCount
+            });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You must be logged in as an Administrator to perform this action.");
+        }
+    }
 
     [Authorize]
     [HttpGet("me")]
@@ -83,5 +107,4 @@ public class UsersController : ControllerBase
             Role = User.FindFirst(ClaimTypes.Role)?.Value
         });
     }
-
 }

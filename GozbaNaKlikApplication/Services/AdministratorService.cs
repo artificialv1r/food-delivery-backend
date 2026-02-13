@@ -22,14 +22,6 @@ public class AdministratorService
         _courierService = new CourierService(context);
         _administratorRepository = new AdministratorRepository(context);
     }
-    public async Task<List<UserPreviewDto>> GetAllUsers(int page, int pageSize, string orderDirection)
-    {
-        return await _administratorRepository.GetPagedAsync(page, pageSize, orderDirection);
-    }
-    public async Task<int> CountAllUsers()
-    {
-        return await _administratorRepository.CountAllUsersAsync();
-    }
 
     public async Task<List<Restaurant>> GetAllRestaurants(int page, int pageSize, string orderDirection)
     {

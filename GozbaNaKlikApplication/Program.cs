@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using GozbaNaKlikApplication.Services.Mappers;
+using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Repositories;
+using GozbaNaKlikApplication.Services;
+using GozbaNaKlikApplication.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +60,10 @@ builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MappingProfile>();
 });
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var app = builder.Build();
 

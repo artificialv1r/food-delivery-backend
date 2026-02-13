@@ -1,9 +1,10 @@
 ﻿using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Interfaces;
 
 namespace GozbaNaKlikApplication.Repositories
 {
-    public class CustomerRepository
+    public class CustomerRepository  : ICustomerRepository
     {
         private AppDbContext _context;
         public CustomerRepository(AppDbContext context)
