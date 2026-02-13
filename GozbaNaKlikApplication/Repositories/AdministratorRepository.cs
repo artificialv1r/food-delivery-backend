@@ -14,32 +14,6 @@ namespace GozbaNaKlikApplication.Repositories
             _context = context;
         }
 
-        public async Task<List<UserPreviewDto>> GetPagedAsync(int page, int pageSize, string orderDirection)
-        {
-            IQueryable<User> query = _context.Users;
-
-            query = orderDirection == "desc"
-                ? query.OrderByDescending(u => u.Username)
-                : query.OrderBy(u => u.Username);
-
-            query = query.Skip(pageSize * (page - 1))
-                         .Take(pageSize);
-
-            var result = query.Select(u => new UserPreviewDto
-            {
-                Username = u.Username,
-                Name = u.Name,
-                Surname = u.Surname,
-                Email = u.Email,
-                Role = u.Role.ToString()
-            });
-            return await result.ToListAsync();
-        }
-        public async Task<int> CountAllUsersAsync()
-        {
-            return await _context.Users.CountAsync();
-        }
-
         public async Task<List<Restaurant>> ShowAllRestaurantsAsync(int page, int pageSize, string orderDirection)
         {
             IQueryable<Restaurant> query = _context.Restaurants;

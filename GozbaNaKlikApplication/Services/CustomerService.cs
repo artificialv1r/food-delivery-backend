@@ -1,16 +1,16 @@
-﻿using GozbaNaKlikApplication.Data;
-using GozbaNaKlikApplication.Models;
-using GozbaNaKlikApplication.Repositories;
+﻿using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Services.Interfaces;
 
 namespace GozbaNaKlikApplication.Services
 {
-    public class CustomerService
+    public class CustomerService : ICustomerService
     {
-        private readonly CustomerRepository _customerRepository;
+        private readonly ICustomerRepository _customerRepository;
 
-        public CustomerService(AppDbContext context)
+        public CustomerService(ICustomerRepository customerRepository)
         {
-            _customerRepository = new CustomerRepository(context);
+            _customerRepository = customerRepository;
         }
 
         public async Task<CustomerProfile> AddCustomerAsync(CustomerProfile customerProfile)

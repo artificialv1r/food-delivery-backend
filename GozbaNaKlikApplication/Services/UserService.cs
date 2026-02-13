@@ -1,26 +1,26 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
-using GozbaNaKlikApplication.Repositories;
+using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GozbaNaKlikApplication.Services;
 
-public class UserService
+public class UserService: IUserService
 {
-    private readonly UserRepository _userRepository;
-    private readonly CustomerService _customerService;
+    private readonly IUserRepository _userRepository;
+    private readonly ICustomerService _customerService;
 
-    public UserService(AppDbContext context)
+    public UserService(IUserRepository userRepository, ICustomerService customerService)
     {
-        _userRepository = new UserRepository(context);
-        _customerService = new CustomerService(context);
+        _userRepository = userRepository;
+        _customerService = customerService;
     }
-
-
+    
     public async Task<User> Login(string username, string password)
     {
         User user = await _userRepository.GetByUsername(username);
@@ -39,34 +39,6 @@ public class UserService
 
         return user;
     }
-
-    public string GenerateJwtToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
-        };
-
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_1234567890_ABCD")
-        );
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: "gozbanaklik",
-            audience: "gozbanaklik",
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    //TODO: Dodati servise za korisnike (npr. GetAll, GetOne, Create, Update, Delete)
 
     public async Task<User> AddUserAsync(User user)
     {
@@ -91,5 +63,40 @@ public class UserService
         await _customerService.AddCustomerAsync(customer);
 
         return newUser;
+    }
+    
+    public async Task<List<UserPreviewDto>> GetAllUsers(int page, int pageSize, string orderDirection)
+    {
+        return await _userRepository.GetPagedAsync(page, pageSize, orderDirection);
+    }
+    public async Task<int> CountAllUsers()
+    {
+        return await _userRepository.CountAllUsersAsync();
+    }
+    
+    public string GenerateJwtToken(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        };
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_1234567890_ABCD")
+        );
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: "gozbanaklik",
+            audience: "gozbanaklik",
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(2),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

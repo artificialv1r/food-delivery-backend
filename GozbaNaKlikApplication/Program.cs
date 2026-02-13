@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Repositories;
+using GozbaNaKlikApplication.Services;
+using GozbaNaKlikApplication.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +54,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var app = builder.Build();
 
