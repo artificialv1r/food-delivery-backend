@@ -1,21 +1,41 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
-using GozbaNaKlikApplication.Repositories;
+using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Services.Interfaces;
 
 namespace GozbaNaKlikApplication.Services;
 
-public class RestaurantService
+public class RestaurantService : IRestaurantService
 {
-    private readonly RestaurantRepository _restaurantRepository;
-    private readonly OwnerRepository _ownerRepository;
+    private readonly IRestaurantRepository _restaurantRepository;
+    private readonly IOwnerRepository _ownerRepository;
 
-    public RestaurantService(AppDbContext context)
+    public RestaurantService(IRestaurantRepository restaurantRepository, IOwnerRepository ownerRepository)
     {
-        _restaurantRepository = new RestaurantRepository(context);
-        _ownerRepository = new OwnerRepository(context);
+        _restaurantRepository = restaurantRepository;
+        _ownerRepository = ownerRepository;
     }
 
+
+    public async Task<List<ShowRestaurantDto>> GetAllRestaurants(int page, int pageSize, string orderDirection)
+    {
+        var restaurants = await _restaurantRepository.ShowAllRestaurantsAsync(page, pageSize, orderDirection);
+
+        var dtoList = restaurants.Select(r => new ShowRestaurantDto
+        {
+            Name = r.Name,
+            Description = r.Description,
+            OwnerFullName = r.Owner.User.Name + " " + r.Owner.User.Surname,
+            Meals = r.Meals.ToList(),
+        }).ToList();
+
+        return dtoList;
+    }
+    public async Task<int> CountAllResturants()
+    {
+        return await _restaurantRepository.CountAllResturantsAsync();
+    }
     public async Task<Restaurant> CreateRestaurantAsync(AddRestaurantDto dto)
     {
         if (!dto.IsValid())
