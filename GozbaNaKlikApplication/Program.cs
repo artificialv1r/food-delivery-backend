@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GozbaNaKlikApplication.Services.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAutoMapper(cfg => {
+    cfg.AddProfile<MappingProfile>();
+});
+
 
 var app = builder.Build();
 
