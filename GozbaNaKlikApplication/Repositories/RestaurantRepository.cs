@@ -14,26 +14,23 @@ public class RestaurantRepository : IRestaurantRepository
         _context = context;
     }
 
-    public async Task<List<Restaurant>> ShowAllRestaurantsAsync(int page, int pageSize, string orderDirection)
+    public async Task<PaginatedList<Restaurant>> GetAllRestaurantsPagedAsync(int page, int pageSize)
     {
-        IQueryable<Restaurant> query = _context.Restaurants
+        int pageIndex = page - 1;
+        var query = _context.Restaurants
             .Include(o => o.Owner)
             .ThenInclude(u => u.User);
 
-        query = orderDirection == "desc"
-            ? query.OrderByDescending(r => r.Name)
-            : query.OrderBy(r => r.Name);
+        var restaurants = await query
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
-        query = query.Skip(pageSize * (page - 1))
-                     .Take(pageSize);
-
-        return await query.ToListAsync();
+        var count = await _context.Restaurants.CountAsync();
+        PaginatedList<Restaurant> result = new PaginatedList<Restaurant>(restaurants, count, pageIndex, pageSize);
+        return result;
     }
 
-    public async Task<int> CountAllResturantsAsync()
-    {
-        return await _context.Restaurants.CountAsync();
-    }
     public async Task<Restaurant> AddNewRestaurantAsync(Restaurant restaurant)
     {
         _context.Restaurants.Add(restaurant);

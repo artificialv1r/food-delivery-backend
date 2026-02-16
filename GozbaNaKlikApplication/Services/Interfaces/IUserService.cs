@@ -8,6 +8,5 @@ public interface IUserService
     Task<User> Login(string username, string password);
     string GenerateJwtToken(User user);
     Task<User> AddUserAsync(User user);
-    Task<List<UserPreviewDto>> GetAllUsers(int page, int pageSize, string orderDirection);
-    Task<int> CountAllUsers();
+    Task<PaginatedList<UserPreviewDto>> GetAllUsersPagedAsync(int page, int pageSize);
 }
