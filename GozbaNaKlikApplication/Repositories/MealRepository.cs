@@ -2,6 +2,8 @@
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using GozbaNaKlikApplication.Models;
+
 
 namespace GozbaNaKlikApplication.Repositories
 {
@@ -14,18 +16,28 @@ namespace GozbaNaKlikApplication.Repositories
             _context = context;
         }
 
-        public async Task<List<Meal>> GetMealsByRestaurantIdAsync(int restaurantId, int page, int pageSize, string orderDirection)
+        public async Task<PaginatedList<Meal>> GetMealsByRestaurantIdAsync(int restaurantId, int page, int pageSize, string orderDirection)
         {
-            IQueryable<Meal> query = _context.Meals
+            int pageIndex = page - 1;
+            var query = _context.Meals
                 .Where(m => m.RestaurantId == restaurantId);
 
             query = orderDirection == "desc"
                 ? query.OrderByDescending(m => m.Name)
                 : query.OrderBy(m => m.Name);
+            
+            var meals = await query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            query = query.Skip(pageSize * (page - 1)).Take(pageSize);
+            var count = await _context.Meals
+                .Where(m => m.RestaurantId == restaurantId)
+                .CountAsync();
 
-            return await query.ToListAsync();
+            var result = new PaginatedList<Meal>(meals, count, pageIndex, pageSize);
+
+            return result;
         }
 
         public async Task<int> CountMealsByRestaurantAsync(int restaurantId)

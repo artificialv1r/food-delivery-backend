@@ -34,8 +34,8 @@ namespace GozbaNaKlikApplication.Controllers
 
                 return Ok(new
                 {
-                    ShowMealDto = meals,
-                    TotalCount = totalCount
+                    ShowMealDto = meals.Items,
+                    TotalCount = meals.Count
                 });
             }
             catch (KeyNotFoundException e)

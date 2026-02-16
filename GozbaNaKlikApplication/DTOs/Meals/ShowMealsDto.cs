@@ -1,4 +1,4 @@
-﻿namespace GozbaNaKlikApplication.DTOs.Meal
+﻿namespace GozbaNaKlikApplication.DTOs.Meals
 {
     public class ShowMealsDto
     {

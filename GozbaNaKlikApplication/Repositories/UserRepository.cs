@@ -27,29 +27,19 @@ public class UserRepository  : IUserRepository
         return user;
     }
     
-    public async Task<List<UserPreviewDto>> GetPagedAsync(int page, int pageSize, string orderDirection)
+    public async Task<PaginatedList<User>> GetAllUsersPagedAsync(int page, int pageSize)
     {
-        IQueryable<User> query = _context.Users;
+        int pageIndex = page - 1;
+        var query = _context.Users;
 
-        query = orderDirection == "desc"
-            ? query.OrderByDescending(u => u.Username)
-            : query.OrderBy(u => u.Username);
+        var users = await query
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
-        query = query.Skip(pageSize * (page - 1))
-            .Take(pageSize);
-
-        var result = query.Select(u => new UserPreviewDto
-        {
-            Username = u.Username,
-            Name = u.Name,
-            Surname = u.Surname,
-            Email = u.Email,
-            Role = u.Role.ToString()
-        });
-        return await result.ToListAsync();
+        var count = await _context.Users.CountAsync();
+        PaginatedList<User> result = new PaginatedList<User>(users, count, pageIndex, pageSize);
+        return result;
     }
-    public async Task<int> CountAllUsersAsync()
-    {
-        return await _context.Users.CountAsync();
-    }
+   
 }

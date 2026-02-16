@@ -6,7 +6,7 @@ namespace GozbaNaKlikApplication.DTOs.Restaurant
     {
         public string Name { get; set; }
         public string? Description { get; set; }
-        public string OwnerFullName { get; set; }
-        public List<GozbaNaKlikApplication.Models.Meal> Meals { get; set; } = new List<GozbaNaKlikApplication.Models.Meal>();
+        public string OwnerUserName { get; set; }
+        public List<Meal> Meals { get; set; } = new List<Meal>();
     }
 }
