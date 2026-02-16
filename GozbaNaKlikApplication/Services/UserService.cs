@@ -1,12 +1,15 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using AutoMapper;
 using GozbaNaKlikApplication.DTOs.Auth;
+using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Repositories;
 using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace GozbaNaKlikApplication.Services;
 
@@ -14,11 +17,12 @@ public class UserService: IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly ICustomerService _customerService;
-
-    public UserService(IUserRepository userRepository, ICustomerService customerService)
+    private readonly IMapper _mapper;
+    public UserService(IUserRepository userRepository, ICustomerService customerService, IMapper mapper)
     {
         _userRepository = userRepository;
         _customerService = customerService;
+        _mapper = mapper;
     }
     
     public async Task<User> Login(string username, string password)
@@ -65,13 +69,17 @@ public class UserService: IUserService
         return newUser;
     }
     
-    public async Task<List<UserPreviewDto>> GetAllUsers(int page, int pageSize, string orderDirection)
+    public async Task<PaginatedList<UserPreviewDto>> GetAllUsersPagedAsync(int page, int pageSize)
     {
-        return await _userRepository.GetPagedAsync(page, pageSize, orderDirection);
-    }
-    public async Task<int> CountAllUsers()
-    {
-        return await _userRepository.CountAllUsersAsync();
+        var users = await _userRepository.GetAllUsersPagedAsync(page, pageSize);
+        var usersDto = _mapper.Map<List<UserPreviewDto>>(users.Items);
+
+        var result = new PaginatedList<UserPreviewDto>(
+            usersDto,
+            users.Count,
+            users.PageIndex,
+            pageSize);
+        return result;
     }
     
     public string GenerateJwtToken(User user)

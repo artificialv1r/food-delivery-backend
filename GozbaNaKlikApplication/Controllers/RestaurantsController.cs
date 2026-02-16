@@ -22,25 +22,9 @@ public class RestaurantsController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpGet]
-    public async Task<IActionResult> GetAllRestaurants(int page = 1, int pageSize = 5, string orderDirection = "asc")
+    public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetAllRestaurantsPaged([FromQuery] int page = 1,[FromQuery] int pageSize = 5)
     {
-        if (page < 1 || pageSize < 1) { return BadRequest("Page and PageSize must be greater then zero."); }
-
-        try
-        {
-            var restaurants = await _restaurantService.GetAllRestaurants(page, pageSize, orderDirection);
-            int totalCount = await _restaurantService.CountAllResturants();
-
-            return Ok(new
-            {
-                ShowRestaurantDto = restaurants,
-                TotalCount = totalCount
-            });
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You must be logged in as an Administrator to perform this action.");
-        }
+        return Ok(await _restaurantService.GetAllRestaurantsPagedAsync(page, pageSize));
     }
 
     [Authorize(Roles = "Administrator")]
