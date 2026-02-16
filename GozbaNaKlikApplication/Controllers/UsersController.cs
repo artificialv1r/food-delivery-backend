@@ -73,9 +73,9 @@ public class UsersController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<UserPreviewDto>>> GetAllUsers(int page = 1, int pageSize = 10)
+    public async Task<ActionResult<PaginatedList<UserPreviewDto>>> GetAllUsersPagedAsync(int page = 1, int pageSize = 10)
     {
-        return Ok(await _userService.GetAllUsers(page, pageSize));
+        return Ok(await _userService.GetAllUsersPagedAsync(page, pageSize));
     }
 
     [Authorize]

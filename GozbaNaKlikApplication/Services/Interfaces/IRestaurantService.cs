@@ -7,7 +7,7 @@ namespace GozbaNaKlikApplication.Services.Interfaces
     {
         Task<Restaurant> CreateRestaurantAsync(AddRestaurantDto dto);
         Task<bool> DeleteRestaurant(int id);
-        Task<PaginatedList<ShowRestaurantDto>> GetAllRestaurantsAsync(int page, int pageSize);
+        Task<PaginatedList<ShowRestaurantDto>> GetAllRestaurantsPagedAsync(int page, int pageSize);
         Task<Restaurant> UpdateRestaurantAsync(int id, UpdateRestaurantDto dto);
     }
 }

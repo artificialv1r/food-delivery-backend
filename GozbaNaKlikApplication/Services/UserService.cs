@@ -69,9 +69,9 @@ public class UserService: IUserService
         return newUser;
     }
     
-    public async Task<PaginatedList<UserPreviewDto>> GetAllUsers(int page, int pageSize)
+    public async Task<PaginatedList<UserPreviewDto>> GetAllUsersPagedAsync(int page, int pageSize)
     {
-        var users = await _userRepository.GetPagedAsync(page, pageSize);
+        var users = await _userRepository.GetAllUsersPagedAsync(page, pageSize);
         var usersDto = _mapper.Map<List<UserPreviewDto>>(users.Items);
 
         var result = new PaginatedList<UserPreviewDto>(

@@ -27,7 +27,7 @@ public class UserRepository  : IUserRepository
         return user;
     }
     
-    public async Task<PaginatedList<User>> GetPagedAsync(int page, int pageSize)
+    public async Task<PaginatedList<User>> GetAllUsersPagedAsync(int page, int pageSize)
     {
         int pageIndex = page - 1;
         var query = _context.Users;

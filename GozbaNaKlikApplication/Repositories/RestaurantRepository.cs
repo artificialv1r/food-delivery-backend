@@ -14,7 +14,7 @@ public class RestaurantRepository : IRestaurantRepository
         _context = context;
     }
 
-    public async Task<PaginatedList<Restaurant>> ShowAllRestaurantsAsync(int page, int pageSize)
+    public async Task<PaginatedList<Restaurant>> GetAllRestaurantsPagedAsync(int page, int pageSize)
     {
         int pageIndex = page - 1;
         var query = _context.Restaurants

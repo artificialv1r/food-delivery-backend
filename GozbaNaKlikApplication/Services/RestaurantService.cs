@@ -22,9 +22,9 @@ public class RestaurantService : IRestaurantService
     }
 
 
-    public async Task<PaginatedList<ShowRestaurantDto>> GetAllRestaurantsAsync(int page, int pageSize)
+    public async Task<PaginatedList<ShowRestaurantDto>> GetAllRestaurantsPagedAsync(int page, int pageSize)
     {
-        var restaurants = await _restaurantRepository.ShowAllRestaurantsAsync(page, pageSize);
+        var restaurants = await _restaurantRepository.GetAllRestaurantsPagedAsync(page, pageSize);
         var restaurantDto = _mapper.Map<List<ShowRestaurantDto>>(restaurants.Items);
 
         var result = new PaginatedList<ShowRestaurantDto>(
