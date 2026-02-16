@@ -22,7 +22,7 @@ public class RestaurantsController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetAllRestaurantsPaged(int page = 1, int pageSize = 5)
+    public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetAllRestaurantsPaged([FromQuery] int page = 1,[FromQuery] int pageSize = 5)
     {
         return Ok(await _restaurantService.GetAllRestaurantsPagedAsync(page, pageSize));
     }
