@@ -68,7 +68,11 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+builder.Services.AddScoped<IOwnerService,  OwnerService>();
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
+builder.Services.AddScoped<ICourierService, CourierService>();
+builder.Services.AddScoped<ICourierRepository, CourierRepository>();
+builder.Services.AddScoped<IAdministratorService, AdministratorService>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
