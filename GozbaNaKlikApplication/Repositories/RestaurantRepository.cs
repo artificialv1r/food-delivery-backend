@@ -100,9 +100,9 @@ public class RestaurantRepository : IRestaurantRepository
             restaurants = restaurants.Where(r=>r.Name.ToLower().Contains(filter.Name.ToLower()));
         }
         
-        if (!string.IsNullOrWhiteSpace(filter.MealType))
+        if (!string.IsNullOrWhiteSpace(filter.MealName))
         {
-            restaurants = restaurants.Where(r => r.Meals.Any(m => m.Name.ToLower().Contains(filter.MealType)));
+            restaurants = restaurants.Where(r => r.Meals.Any(m => m.Name.ToLower().Contains(filter.MealName.ToLower())));
         }
         
         return restaurants;
