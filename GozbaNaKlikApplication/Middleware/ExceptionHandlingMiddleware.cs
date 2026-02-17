@@ -1,7 +1,7 @@
 ﻿using GozbaNaKlikApplication.Exceptions;
 using System.Text.Json;
 
-namespace GozbaNaKlikApplication.Settings
+namespace GozbaNaKlikApplication.Middleware
 {
     internal sealed class ExceptionHandlingMiddleware : IMiddleware
     {

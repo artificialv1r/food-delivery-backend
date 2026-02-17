@@ -12,14 +12,14 @@ namespace GozbaNaKlikApplication.Services;
 
 public class AdministratorService : IAdministratorService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
     private readonly IOwnerService _ownerService;
     private readonly ICourierService _courierService;
 
 
-    public AdministratorService(IUserRepository userRepository, IOwnerService ownerService, ICourierService courierService)
+    public AdministratorService(IUserService userService, IOwnerService ownerService, ICourierService courierService)
     {
-        _userRepository = userRepository;
+        _userService = userService;
         _ownerService = ownerService;
         _courierService = courierService;
     }
@@ -31,7 +31,7 @@ public class AdministratorService : IAdministratorService
             throw new BadRequestException("Invalid role for admin registration");
         }
 
-        var existingUser = await _userRepository.GetByUsername(user.Username);
+        var existingUser = await _userService.GetByUsername(user.Username);
 
         if (existingUser != null)
         {
@@ -40,7 +40,7 @@ public class AdministratorService : IAdministratorService
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
-        User newUser = await _userRepository.AddNewUserAsync(user);
+        User newUser = await _userService.AddUserAsync(user);
 
         switch (user.Role)
         {

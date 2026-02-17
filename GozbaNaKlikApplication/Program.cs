@@ -1,10 +1,10 @@
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.Middleware;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
 using GozbaNaKlikApplication.Services;
 using GozbaNaKlikApplication.Services.Interfaces;
 using GozbaNaKlikApplication.Services.Mappers;
-using GozbaNaKlikApplication.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
