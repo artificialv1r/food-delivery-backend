@@ -3,6 +3,7 @@ using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
+using AutoMapper;
 
 namespace GozbaNaKlikApplication.Services
 {
@@ -10,14 +11,16 @@ namespace GozbaNaKlikApplication.Services
     {
         private readonly IMealRepository _mealRepository;
         private readonly IRestaurantRepository _restaurantRepository;
+        public readonly IMapper _mapper;
 
-        public MealService (IMealRepository mealRepository, IRestaurantRepository restaurantRepository)          
+        public MealService (IMealRepository mealRepository, IRestaurantRepository restaurantRepository, IMapper mapper)          
         {
             _mealRepository = mealRepository;
             _restaurantRepository = restaurantRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Meal> CreateMealAsync(int restaurantId, CreateMealDto dto, int userId)
+        public async Task<ShowMealDto> CreateMealAsync(int restaurantId, CreateMealDto dto, int userId)
         {
             if (!dto.IsValid())
             {
@@ -32,15 +35,10 @@ namespace GozbaNaKlikApplication.Services
             if (restaurant.OwnerId != userId)
                 throw new UnauthorizedAccessException("You can only add meals to your own restaurant.");
 
-            Meal meal = new Meal
-            {
-                Name = dto.Name,
-                Description = dto.Description,
-                Price = dto.Price,
-                RestaurantId = restaurantId,
-            };
-
-            return await _mealRepository.CreateMealAsync(meal);
+            Meal meal = _mapper.Map<Meal>(dto);
+            meal.RestaurantId = restaurantId;
+            Meal createdMeal = await _mealRepository.CreateMealAsync(meal);
+            return _mapper.Map<ShowMealDto>(createdMeal);
         }
     }
 }

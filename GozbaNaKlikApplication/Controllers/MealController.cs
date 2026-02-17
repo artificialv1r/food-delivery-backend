@@ -6,7 +6,7 @@ using GozbaNaKlikApplication.Models;
 
 namespace GozbaNaKlikApplication.Controllers;
 
-[Route("api/restaurants/{restaurantId}/meals")]
+[Route("api/Restaurants/{restaurantId}/meals")]
 [ApiController]
 public class MealsController : ControllerBase
 {
@@ -28,15 +28,8 @@ public class MealsController : ControllerBase
 
         try
         {
-            Meal meal = await _mealService.CreateMealAsync(restaurantId, dto, userId);
-            return Ok(new
-            {
-                meal.Id,
-                meal.Name,
-                meal.Description,
-                meal.Price,
-                meal.RestaurantId
-            });
+            ShowMealDto meal = await _mealService.CreateMealAsync(restaurantId, dto, userId);
+            return Ok(meal);
         }
         catch (ArgumentException e)
         {
