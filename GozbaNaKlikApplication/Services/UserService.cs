@@ -1,6 +1,7 @@
 using AutoMapper;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.DTOs.Restaurant;
+using GozbaNaKlikApplication.Exceptions;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Models.Interfaces;
@@ -31,14 +32,14 @@ public class UserService: IUserService
 
         if (user == null)
         {
-            throw new Exception("Invalid username or password");
+            throw new BadRequestException("Invalid username or password");
         }
 
         bool validPassword = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
 
         if (!validPassword)
         {
-            throw new Exception("Invalid username or password");
+            throw new BadRequestException("Invalid username or password");
         }
 
         return user;
@@ -48,14 +49,14 @@ public class UserService: IUserService
     {
         if (user.Role != UserRole.Customer)
         {
-            throw new Exception("Invalid role for user registration. ");
+            throw new BadRequestException("Invalid role for user registration. ");
         }
 
         var existingUser = await _userRepository.GetByUsername(user.Username);
 
         if (existingUser != null)
         {
-            throw new Exception("This username already exisist.");
+            throw new BadRequestException("This username already exisist.");
         }
 
         var password = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);

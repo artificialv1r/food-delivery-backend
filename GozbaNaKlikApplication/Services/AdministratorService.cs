@@ -1,40 +1,41 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Auth;
+using GozbaNaKlikApplication.Exceptions;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
+using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
+using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace GozbaNaKlikApplication.Services;
 
-public class AdministratorService
+public class AdministratorService : IAdministratorService
 {
-    private readonly UserRepository _userRepository;
-    private readonly OwnerService _ownerService;
-    private readonly CourierService _courierService;
-    private readonly AdministratorRepository _administratorRepository;
-  
+    private readonly IUserRepository _userRepository;
+    private readonly IOwnerService _ownerService;
+    private readonly ICourierService _courierService;
 
-    public AdministratorService(AppDbContext context)
+
+    public AdministratorService(IUserRepository userRepository, IOwnerService ownerService, ICourierService courierService)
     {
-        _userRepository = new UserRepository(context);
-        _ownerService = new OwnerService(context);
-        _courierService = new CourierService(context);
-        _administratorRepository = new AdministratorRepository(context);
+        _userRepository = userRepository;
+        _ownerService = ownerService;
+        _courierService = courierService;
     }
 
     public async Task<User> RegisterNewUser(User user)
     {
         if (user.Role != UserRole.Owner && user.Role != UserRole.Courier)
         {
-            throw new ArgumentException("Invalid role for admin registration");
+            throw new BadRequestException("Invalid role for admin registration");
         }
 
         var existingUser = await _userRepository.GetByUsername(user.Username);
 
         if (existingUser != null)
         {
-            throw new InvalidOperationException("This user already exists");
+            throw new BadRequestException("This user already exists");
         }
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
