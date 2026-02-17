@@ -34,7 +34,16 @@ public class RestaurantService : IRestaurantService
             pageSize);
         return result;
     }
-    
+
+    public async Task<PaginatedList<ShowRestaurantDto>> GetFilteredAndSortedRestaurantsPagedAsync(int page, int pageSize, RestaurantSortType sortType,
+        RestaurantSearchQuery filter)
+    {
+        var restaurants = await _restaurantRepository.GetFilteredAndSortedRestaurantsPagedAsync(page, pageSize, sortType, filter);
+        var dtos = restaurants.Items
+            .Select(_mapper.Map<ShowRestaurantDto>).ToList();
+        return new PaginatedList<ShowRestaurantDto>(dtos, restaurants.Count, restaurants.PageIndex, pageSize);
+    }
+
     public async Task<Restaurant> CreateRestaurantAsync(AddRestaurantDto dto)
     {
         if (!dto.IsValid())

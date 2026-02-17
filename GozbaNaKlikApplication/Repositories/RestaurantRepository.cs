@@ -1,4 +1,5 @@
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,32 @@ public class RestaurantRepository : IRestaurantRepository
 
         var count = await _context.Restaurants.CountAsync();
         PaginatedList<Restaurant> result = new PaginatedList<Restaurant>(restaurants, count, pageIndex, pageSize);
+        return result;
+    }
+
+    public async Task<PaginatedList<Restaurant>> GetFilteredAndSortedRestaurantsPagedAsync(int page, int pageSize,
+        RestaurantSortType sortType, RestaurantSearchQuery filter)
+    {
+        IQueryable<Restaurant> restaurants = _context.Restaurants
+            .Include(r => r.Owner)
+            .ThenInclude(u => u.User)
+            .Include(r => r.Meals);
+        
+        restaurants = FilterRestaurants(restaurants, filter);
+
+        restaurants = sortType switch
+        {
+            RestaurantSortType.NameDesc => restaurants.OrderByDescending(r => r.Name),
+            _ => restaurants.OrderBy(r => r.Name)
+        };
+        
+        int pageIndex = page - 1;
+        var count = await restaurants.CountAsync();
+        var items = await restaurants
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        PaginatedList<Restaurant> result = new PaginatedList<Restaurant>(items, count, pageIndex, pageSize);
         return result;
     }
 
@@ -62,5 +89,20 @@ public class RestaurantRepository : IRestaurantRepository
         _context.Remove(restraurant);
         await _context.SaveChangesAsync();
         return true;
+    }
+    
+    private static IQueryable<Restaurant> FilterRestaurants(IQueryable<Restaurant> restaurants, RestaurantSearchQuery filter)
+    {
+        if (!string.IsNullOrWhiteSpace(filter.Name))
+        {
+            restaurants = restaurants.Where(r=>r.Name.ToLower().Contains(filter.Name.ToLower()));
+        }
+        
+        if (!string.IsNullOrWhiteSpace(filter.MealType))
+        {
+            restaurants = restaurants.Where(r => r.Meals.Any(m => m.Name.ToLower().Contains(filter.MealType)));
+        }
+        
+        return restaurants;
     }
 }
