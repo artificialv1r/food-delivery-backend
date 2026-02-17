@@ -1,4 +1,5 @@
-﻿using GozbaNaKlikApplication.Models;
+﻿using GozbaNaKlikApplication.DTOs.Meals;
+using GozbaNaKlikApplication.Models;
 
 namespace GozbaNaKlikApplication.DTOs.Restaurant
 {
@@ -7,6 +8,6 @@ namespace GozbaNaKlikApplication.DTOs.Restaurant
         public string Name { get; set; }
         public string? Description { get; set; }
         public string OwnerUserName { get; set; }
-        public List<Meal> Meals { get; set; } = new List<Meal>();
+        public List<ShowMealDto> Meals { get; set; } = new List<ShowMealDto>();
     }
 }

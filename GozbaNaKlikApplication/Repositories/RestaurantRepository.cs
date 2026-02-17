@@ -20,7 +20,8 @@ public class RestaurantRepository : IRestaurantRepository
         int pageIndex = page - 1;
         var query = _context.Restaurants
             .Include(o => o.Owner)
-            .ThenInclude(u => u.User);
+            .ThenInclude(u => u.User)
+            .Include(r => r.Meals);
 
         var restaurants = await query
             .Skip(pageIndex * pageSize)
@@ -69,6 +70,7 @@ public class RestaurantRepository : IRestaurantRepository
     {
         return await _context.Restaurants
             .Include(r => r.Owner)
+            .Include(r => r.Meals)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 

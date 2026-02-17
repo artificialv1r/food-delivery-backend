@@ -1,12 +1,13 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Interfaces;
 
 namespace GozbaNaKlikApplication.Repositories;
 
-public class CourierRepository
+public class CourierRepository : ICourierRepository
 {
     private readonly AppDbContext _context;
-    
+
     public CourierRepository(AppDbContext context)
     {
         _context = context;
