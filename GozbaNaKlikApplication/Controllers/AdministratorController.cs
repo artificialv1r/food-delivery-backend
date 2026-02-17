@@ -6,6 +6,7 @@ using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using GozbaNaKlikApplication.Services.Interfaces;
 
 namespace GozbaNaKlikApplication.Controllers;
 
@@ -13,11 +14,11 @@ namespace GozbaNaKlikApplication.Controllers;
 [ApiController]
 public class AdministratorController : ControllerBase
 {
-    private readonly AdministratorService _administratorService;
+    private readonly IAdministratorService _administratorService;
 
-    public AdministratorController(AppDbContext context)
+    public AdministratorController(IAdministratorService administratorService)
     {
-        _administratorService = new AdministratorService(context);
+        _administratorService = administratorService;
     }
 
 
