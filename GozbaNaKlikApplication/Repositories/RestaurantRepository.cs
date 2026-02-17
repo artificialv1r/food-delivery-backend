@@ -63,4 +63,9 @@ public class RestaurantRepository : IRestaurantRepository
         await _context.SaveChangesAsync();
         return true;
     }
+    public async Task<Restaurant?> GetRestaurantByOwnerIdAsync(int ownerId)
+    {
+        return await _context.Restaurants
+            .FirstOrDefaultAsync(r => r.OwnerId == ownerId);
+    }
 }

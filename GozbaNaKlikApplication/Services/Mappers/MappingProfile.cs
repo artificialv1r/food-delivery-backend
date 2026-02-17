@@ -1,5 +1,6 @@
 using AutoMapper;
 using GozbaNaKlikApplication.DTOs.Auth;
+using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
 
@@ -15,5 +16,7 @@ public class MappingProfile : Profile
               );
 
         CreateMap<User, UserPreviewDto>();
+
+        CreateMap<Meal, ShowMealsDto>();
     }
 }
