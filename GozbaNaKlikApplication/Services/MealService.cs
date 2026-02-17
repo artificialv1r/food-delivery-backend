@@ -1,5 +1,5 @@
 ﻿using GozbaNaKlikApplication.Services.Interfaces;
-using GozbaNaKlikApplication.DTOs.Meal;
+using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
@@ -17,18 +17,20 @@ namespace GozbaNaKlikApplication.Services
             _restaurantRepository = restaurantRepository;
         }
 
-        public async Task<Meal> CreateMealAsync(int restaurantId, CreateMealDto dto)
+        public async Task<Meal> CreateMealAsync(int restaurantId, CreateMealDto dto, int userId)
         {
             if (!dto.IsValid())
             {
                 throw new ArgumentException("Meal name and price are required.");
             }
 
-            Restaurant? restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
+            Restaurant restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
             if (restaurant == null)
             {
                 throw new KeyNotFoundException("Restaurant not found.");
             }
+            if (restaurant.OwnerId != userId)
+                throw new UnauthorizedAccessException("You can only add meals to your own restaurant.");
 
             Meal meal = new Meal
             {
