@@ -2,6 +2,6 @@
 {
     public interface IMealService
     {
-        Task<bool> DeleteMeal(int mealId, int ownerId);
+        Task<bool> DeleteMeal(int restaurantId, int mealId, int ownerId);
     }
 }

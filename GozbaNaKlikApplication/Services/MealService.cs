@@ -15,11 +15,14 @@ namespace GozbaNaKlikApplication.Services
             _mealRepository = mealRepository;
             _restaurantRepository = restaurantRepository;
         }
-        public async Task<bool> DeleteMeal(int mealId, int ownerId)
+        public async Task<bool> DeleteMeal(int restaurantId, int mealId, int ownerId)
         {
             var restaurant = await _restaurantRepository.GetRestaurantByOwnerIdAsync(ownerId);
             if (restaurant == null)
                 throw new KeyNotFoundException("No restaurant for this owner.");
+
+            if (restaurant.OwnerId != ownerId)
+                throw new UnauthorizedAccessException("You can only delete meals from your own restaurant.");
 
             var meal = await _mealRepository.GetMealByIdAsync(mealId);
             if (meal == null)
