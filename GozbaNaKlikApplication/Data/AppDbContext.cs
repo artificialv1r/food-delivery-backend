@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<Meal> Meals { get; set; }
     public DbSet<Allergen> Allergens { get; set; }
+    public DbSet<Address> Addresses { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,6 +83,12 @@ public class AppDbContext : DbContext
             .HasMany(c => c.CustomerAllergens)
             .WithMany()
             .UsingEntity(j => j.ToTable("CustomerAllergens"));
+
+        modelBuilder.Entity<Address>()
+            .HasOne(c => c.CustomerProfile)
+            .WithMany(a => a.CustomerAddresses)
+            .HasForeignKey(a => a.CustomerProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
             
         modelBuilder.Entity<User>()
             .HasData(new User { Id = 1, Username = "Admin1", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Aleksandar", Surname = "Popov", Email = "aleksandarpopov@gmail.com", Role = Models.Enums.UserRole.Administrator },
