@@ -10,4 +10,5 @@ public class Meal
     
     public int RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; } = null!;
+    public ICollection<Allergen>?  MealAllergens { get; set; }
 }

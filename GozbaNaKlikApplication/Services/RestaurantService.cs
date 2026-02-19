@@ -1,6 +1,7 @@
 using AutoMapper;
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Restaurant;
+using GozbaNaKlikApplication.Exceptions;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Services.Interfaces;
@@ -34,19 +35,28 @@ public class RestaurantService : IRestaurantService
             pageSize);
         return result;
     }
-    
+
+    public async Task<PaginatedList<ShowRestaurantDto>> GetFilteredAndSortedRestaurantsPagedAsync(int page, int pageSize, RestaurantSortType sortType,
+        RestaurantSearchQuery filter)
+    {
+        var restaurants = await _restaurantRepository.GetFilteredAndSortedRestaurantsPagedAsync(page, pageSize, sortType, filter);
+        var dtos = restaurants.Items
+            .Select(_mapper.Map<ShowRestaurantDto>).ToList();
+        return new PaginatedList<ShowRestaurantDto>(dtos, restaurants.Count, restaurants.PageIndex, pageSize);
+    }
+
     public async Task<Restaurant> CreateRestaurantAsync(AddRestaurantDto dto)
     {
         if (!dto.IsValid())
         {
-            throw new ArgumentException("Restaurant name and owner are required.");
+            throw new BadRequestException("Restaurant name and owner are required.");
         }
 
         OwnerProfile owner = await _ownerRepository.GetByUserId(dto.OwnerId);
 
         if (owner == null)
         {
-            throw new ArgumentException("Selected owner does not exist.");
+            throw new BadRequestException("Selected owner does not exist.");
         }
 
         Restaurant restaurant = new Restaurant
@@ -65,14 +75,14 @@ public class RestaurantService : IRestaurantService
 
         if (restaurant == null)
         {
-            throw new KeyNotFoundException("Restaurant not found");
+            throw new NotFoundException(id);
         }
 
         OwnerProfile owner = await _ownerRepository.GetByUserId(dto.OwnerId);
 
         if (owner == null)
         {
-            throw new ArgumentException("Owner not found");
+            throw new NotFoundException(dto.OwnerId);
         }
 
         restaurant.Name = dto.Name;
@@ -88,7 +98,7 @@ public class RestaurantService : IRestaurantService
 
         if (restaurant == null)
         {
-            throw new KeyNotFoundException("Restaurant not found.");
+            throw new NotFoundException(id);
         }
 
         return await _restaurantRepository.DeleteRestaurantAsync(id);

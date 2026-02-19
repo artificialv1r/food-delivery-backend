@@ -1,11 +1,13 @@
 using AutoMapper;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.DTOs.Restaurant;
+using GozbaNaKlikApplication.Exceptions;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
 using GozbaNaKlikApplication.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -24,21 +26,25 @@ public class UserService: IUserService
         _customerService = customerService;
         _mapper = mapper;
     }
-    
+
+    public async Task<User?> GetByUsername(string username)
+    {
+        return await _userRepository.GetByUsername(username);
+    }
     public async Task<User> Login(string username, string password)
     {
         User user = await _userRepository.GetByUsername(username);
 
         if (user == null)
         {
-            throw new Exception("Invalid username or password");
+            throw new BadRequestException("Invalid username or password");
         }
 
         bool validPassword = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
 
         if (!validPassword)
         {
-            throw new Exception("Invalid username or password");
+            throw new BadRequestException("Invalid username or password");
         }
 
         return user;
@@ -48,14 +54,14 @@ public class UserService: IUserService
     {
         if (user.Role != UserRole.Customer)
         {
-            throw new Exception("Invalid role for user registration. ");
+            throw new BadRequestException("Invalid role for user registration. ");
         }
 
         var existingUser = await _userRepository.GetByUsername(user.Username);
 
         if (existingUser != null)
         {
-            throw new Exception("This username already exisist.");
+            throw new BadRequestException("This username already exisist.");
         }
 
         var password = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
