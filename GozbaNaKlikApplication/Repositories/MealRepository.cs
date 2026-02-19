@@ -1,7 +1,6 @@
 ﻿using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Models;
-using GozbaNaKlikApplication.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories
@@ -32,7 +31,6 @@ namespace GozbaNaKlikApplication.Repositories
             await _context.SaveChangesAsync();
             return meal;
 
-            {
         }
     }
 }

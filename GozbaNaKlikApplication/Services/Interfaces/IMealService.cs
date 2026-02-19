@@ -7,6 +7,6 @@ namespace GozbaNaKlikApplication.Services.Interfaces
     public interface IMealService
     {
         Task<ShowMealDto> CreateMealAsync(int restaurantId, CreateMealDto dto, int userId);
-        Task<Meal> UpdateMealAsync(int restaurantId, int mealId, UpdateMealDto dto, int userId);
+        Task<ShowMealDto> UpdateMealAsync(int restaurantId, int mealId, UpdateMealDto dto, int userId);
     }
 }
