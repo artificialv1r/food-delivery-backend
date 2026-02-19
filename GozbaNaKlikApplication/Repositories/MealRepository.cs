@@ -3,6 +3,7 @@ using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Models.Enums;
 
 
 namespace GozbaNaKlikApplication.Repositories
@@ -16,35 +17,26 @@ namespace GozbaNaKlikApplication.Repositories
             _context = context;
         }
 
-        public async Task<PaginatedList<Meal>> GetMealsByRestaurantIdAsync(int restaurantId, int page, int pageSize, string orderDirection)
+        public async Task<PaginatedList<Meal>> GetAllSortedMealsByRestaurantId(
+            int restaurantId, int page, int pageSize, MealSortType sortType)
         {
-            int pageIndex = page - 1;
-            var query = _context.Meals
+            IQueryable<Meal> meals = _context.Meals
                 .Where(m => m.RestaurantId == restaurantId);
 
-            query = orderDirection == "desc"
-                ? query.OrderByDescending(m => m.Name)
-                : query.OrderBy(m => m.Name);
-            
-            var meals = await query
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
 
-            var count = await _context.Meals
-                .Where(m => m.RestaurantId == restaurantId)
-                .CountAsync();
+            meals = sortType switch
+            {
+                MealSortType.PriceDesc => meals.OrderByDescending(m => m.Price),
+                _ => meals.OrderBy(m => m.Price)
+            };
 
-            var result = new PaginatedList<Meal>(meals, count, pageIndex, pageSize);
+            int pageIndex = page - 1;
+            var count = await meals.CountAsync();
+            var items = await meals.Skip(pageIndex * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
 
-            return result;
-        }
-
-        public async Task<int> CountMealsByRestaurantAsync(int restaurantId)
-        {
-            return await _context.Meals
-                .Where(m => m.RestaurantId == restaurantId)
-                .CountAsync();
+            return new PaginatedList<Meal>(items, count, pageIndex, pageSize);
         }
     }
 }

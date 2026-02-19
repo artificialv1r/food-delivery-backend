@@ -1,4 +1,5 @@
-﻿using GozbaNaKlikApplication.Services.Interfaces;
+﻿using GozbaNaKlikApplication.Models.Enums;
+using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +19,8 @@ namespace GozbaNaKlikApplication.Controllers
         }
 
         [Authorize(Roles = "Owner")]
-        [HttpGet]
-        public async Task<IActionResult> GetMeals(int page = 1, int pageSize = 5, string orderDirection = "asc")
+        [HttpGet("sorting")]
+        public async Task<IActionResult> GetMeals(int page = 1, int pageSize = 5, MealSortType sortType = MealSortType.PriceAsc)
         {
             if (page < 1 || pageSize < 1)
                 return BadRequest("Page and PageSize must be greater than zero.");
@@ -28,15 +29,7 @@ namespace GozbaNaKlikApplication.Controllers
             {
                 int ownerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-                var meals = await _mealService.GetMealsForOwner(ownerId, page, pageSize, orderDirection);
-
-                int totalCount = await _mealService.CountMealsForOwner(ownerId);
-
-                return Ok(new
-                {
-                    ShowMealDto = meals.Items,
-                    TotalCount = meals.Count
-                });
+                return Ok(await _mealService.GetMealsForOwner(ownerId, page, pageSize, sortType));
             }
             catch (KeyNotFoundException e)
             {

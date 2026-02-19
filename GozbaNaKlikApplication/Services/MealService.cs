@@ -3,6 +3,7 @@ using GozbaNaKlikApplication.Services.Interfaces;
 using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
 using AutoMapper;
+using GozbaNaKlikApplication.Models.Enums;
 
 namespace GozbaNaKlikApplication.Services
 {
@@ -19,35 +20,19 @@ namespace GozbaNaKlikApplication.Services
             _mapper = mapper;
         }
 
-        public async Task<PaginatedList<ShowMealsDto>> GetMealsForOwner(int ownerId, int page, int pageSize, string orderDirection)
+        public async Task<PaginatedList<ShowMealsDto>> GetMealsForOwner(int ownerId, int page, int pageSize, MealSortType sortType)
         {
             var restaurant = await _restaurantRepository.GetRestaurantByOwnerIdAsync(ownerId);
 
             if (restaurant == null)
-            {
                 throw new KeyNotFoundException("Restaurant not found for this owner.");
-            }
-            var meals = await _mealRepository.GetMealsByRestaurantIdAsync(restaurant.Id, page, pageSize, orderDirection);
+
+            var meals = await _mealRepository.GetAllSortedMealsByRestaurantId(restaurant.Id, page, pageSize, sortType);
 
             var mealsDto = _mapper.Map<List<ShowMealsDto>>(meals.Items);
 
-            var result = new PaginatedList<ShowMealsDto>(
-                mealsDto,
-                meals.Count,
-                meals.PageIndex,
-                pageSize);
-
-            return result;
+            return new PaginatedList<ShowMealsDto>(mealsDto, meals.Count, meals.PageIndex, pageSize);
         }
 
-        public async Task<int> CountMealsForOwner(int ownerId)
-        {
-            var restaurant = await _restaurantRepository.GetRestaurantByOwnerIdAsync(ownerId);
-
-            if (restaurant == null)
-                throw new KeyNotFoundException("Restaurant not found for this owner.");
-
-            return await _mealRepository.CountMealsByRestaurantAsync(restaurant.Id);
-        }
     }
 }
