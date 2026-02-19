@@ -86,7 +86,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Address>()
             .HasOne(c => c.CustomerProfile)
-            .WithMany(a => a.Addresses)
+            .WithMany(a => a.CustomerAddresses)
             .HasForeignKey(a => a.CustomerProfileId)
             .OnDelete(DeleteBehavior.Cascade);
             
