@@ -1,4 +1,5 @@
-﻿using GozbaNaKlikApplication.Models;
+﻿using GozbaNaKlikApplication.DTOs.Restaurant;
+using GozbaNaKlikApplication.Models;
 
 namespace GozbaNaKlikApplication.Models.Interfaces
 {
@@ -9,5 +10,6 @@ namespace GozbaNaKlikApplication.Models.Interfaces
         Task<Restaurant> GetByIdAsync(int id);
         Task<PaginatedList<Restaurant>> GetAllRestaurantsPagedAsync(int page, int pageSize);
         Task<Restaurant> UpdateRestaurantAsync(Restaurant restaurant);
+        Task<PaginatedList<Restaurant>> GetFilteredAndSortedRestaurantsPagedAsync(int page, int pageSize, RestaurantSortType sortType, RestaurantSearchQuery filter);
     }
 }

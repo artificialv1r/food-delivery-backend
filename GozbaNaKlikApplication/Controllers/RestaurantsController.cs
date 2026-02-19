@@ -87,4 +87,10 @@ public class RestaurantsController : ControllerBase
             return NotFound(e.Message);
         }
     }
+
+    [HttpGet("filter")]
+    public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetFilteredAndSortedRestaurantsPagedAsync( [FromQuery] RestaurantSortType sortType, [FromQuery] RestaurantSearchQuery filter, [FromQuery] int page=1,[FromQuery] int pageSize = 10)
+    {
+        return Ok(await _restaurantService.GetFilteredAndSortedRestaurantsPagedAsync(page, pageSize, sortType, filter));
+    }
 }
