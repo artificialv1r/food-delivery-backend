@@ -1,6 +1,7 @@
 ﻿using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories
 {
@@ -18,6 +19,18 @@ namespace GozbaNaKlikApplication.Repositories
             _context.Meals.Add(meal);
             await _context.SaveChangesAsync();
             return meal;
+        }
+        public async Task<Meal?> GetByIdAsync(int id)
+        {
+            return await _context.Meals.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public async Task<Meal> UpdateMealAsync(Meal meal)
+        {
+            _context.Meals.Update(meal);
+            await _context.SaveChangesAsync();
+            return meal;
+
         }
     }
 }

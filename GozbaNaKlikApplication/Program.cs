@@ -99,9 +99,7 @@ builder.Services.AddScoped<ICourierRepository, CourierRepository>();
 builder.Services.AddScoped<IAdministratorService, AdministratorService>();
 builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IMealRepository, MealRepository>();
-
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
