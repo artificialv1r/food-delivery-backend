@@ -45,10 +45,6 @@ namespace GozbaNaKlikApplication.Services
 
         public async Task<ShowMealDto> UpdateMealAsync(int restaurantId, int mealId, UpdateMealDto dto, int userId)
         {
-            if (!dto.isValid())
-            {
-                throw new ArgumentException("Meal name and price are required.");
-            }
 
             Restaurant restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
             if (restaurant == null)
