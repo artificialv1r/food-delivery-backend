@@ -15,6 +15,11 @@ public class UserRepository  : IUserRepository
         _context = context;
     }
 
+    public async Task<User> GetByIdAsync(int id)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == id);
+    }
     public async Task<User?> GetByUsername(string username)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
@@ -25,7 +30,6 @@ public class UserRepository  : IUserRepository
         await _context.SaveChangesAsync();
         return user;
     }
-    
     public async Task<PaginatedList<User>> GetAllUsersPagedAsync(int page, int pageSize)
     {
         int pageIndex = page - 1;
