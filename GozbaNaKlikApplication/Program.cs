@@ -103,7 +103,6 @@ builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

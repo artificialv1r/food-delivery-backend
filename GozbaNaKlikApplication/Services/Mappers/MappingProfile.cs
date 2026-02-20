@@ -16,6 +16,8 @@ public class MappingProfile : Profile
 
         CreateMap<Meal, ShowMealDto>();
 
+        CreateMap<UpdateMealDto, Meal>();
+
         CreateMap<Restaurant, ShowRestaurantDto>()
               .ForMember(owner => owner.OwnerUserName,
               opt => opt.MapFrom(src => src.Owner.User.Name + " " + src.Owner.User.Surname))
