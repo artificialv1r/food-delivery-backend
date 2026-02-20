@@ -1,4 +1,5 @@
 using AutoMapper;
+using GozbaNaKlikApplication.DTOs.Address;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.DTOs.Restaurant;
@@ -24,5 +25,8 @@ public class MappingProfile : Profile
               opt => opt.MapFrom(src => src.Meals));
 
         CreateMap<User, UserPreviewDto>();
+        CreateMap<CreateCustomerAddressDto, Address>().ReverseMap();
+        CreateMap<Address, ShowAddressDto>();
+        CreateMap<Address, UpdateAddressDto>().ReverseMap();
     }
 }

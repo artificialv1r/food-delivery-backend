@@ -20,12 +20,6 @@ namespace GozbaNaKlikApplication.Services
 
         public async Task<CustomerProfile> AddCustomerAsync(CustomerProfile customer)
         {
-            var existing = await _userRepository.GetByUsername(customer.User.Username);
-            if (existing != null)
-            {
-                throw new BadRequestException("This user already exists");
-            }
-
             return await _customerRepository.AddNewCustomerAsync(customer);
         }
     }
