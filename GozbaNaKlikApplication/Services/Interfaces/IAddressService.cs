@@ -5,9 +5,9 @@ namespace GozbaNaKlikApplication.Services.Interfaces
 {
     public interface IAddressService
     {
-        Task<CreateAddressDto> AddNewAddressAsync(CreateAddressDto addressDto, int customerId);
-        Task<bool> DeleteAddressAsync(int id);
-        Task<List<ShowAddressDto>> GetAllAddressesAsync(int custmerId);
-        Task<UpdateAddressDto> UpdateAddressAsync(int customerId, int addressId,UpdateAddressDto address);
+        Task<CreateCustomerAddressDto> AddNewCustomerAddressAsync(CreateCustomerAddressDto addressDto, int customerId);
+        Task<bool> DeleteAddressAsync(int id, int customerId);
+        Task<List<ShowAddressDto>> GetAllCustomerAddressesAsync(int custmerId);
+        Task<UpdateAddressDto> UpdateCustomerAddressAsync(int customerId, int addressId,UpdateAddressDto address);
     }
 }

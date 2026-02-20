@@ -21,60 +21,46 @@ namespace GozbaNaKlikApplication.Services
             _userRepository = userRepository;
             _mapper = mapper;
         }
-        public async Task<CreateAddressDto> AddNewAddressAsync(CreateAddressDto addressDto, int customerId)
+        public async Task<CreateCustomerAddressDto> AddNewCustomerAddressAsync(CreateCustomerAddressDto addressDto, int customerId)
         {
             var user = await _userRepository.GetByIdAsync(customerId);
-            if (user == null)
-            {
-                throw new NotFoundException(customerId);
-            }
-            if (user.Role != Models.Enums.UserRole.Customer)
-            {
-                throw new ForbiddenException($"User with id {customerId} is not a customer.");
-            }
             var address = _mapper.Map<Address>(addressDto);
-            address.CustomerProfileId = customerId;
-            var createdAddress = await _addressRepository.AddNewAddressAsync(address);
-            return _mapper.Map<CreateAddressDto>(createdAddress);
+            var createdAddress = await _addressRepository.AddNewCustomerAddressAsync(address);
+            return _mapper.Map<CreateCustomerAddressDto>(createdAddress);
         }
-        public async Task<bool> DeleteAddressAsync(int id)
+        public async Task<bool> DeleteAddressAsync(int id, int customerId)
         {
-            var address = await _addressRepository.GetByIdAsync(id);
+            var address = await _addressRepository.GetCustomerAddressByIdAsync(id);
             if (address == null)
             {
                 throw new NotFoundException(id);
             }
+            if(address.CustomerProfileId != customerId)
+            {
+                throw new ForbiddenException("You do not have permission to delete this address.");
+            }
             return await _addressRepository.DeleteAddressAsync(id);
         }
 
-        public async Task<List<ShowAddressDto>> GetAllAddressesAsync(int customerId)
+        public async Task<List<ShowAddressDto>> GetAllCustomerAddressesAsync(int customerId)
         {
             var user = await _userRepository.GetByIdAsync(customerId);
-            if (user == null)
-            {
-                throw new NotFoundException(customerId);
-            }
-            var addresses = await _addressRepository.GetAllAddressesAsync(customerId);
+            var addresses = await _addressRepository.GetAllCustomerAddressesAsync(customerId);
             var addressesDto = _mapper.Map<List<ShowAddressDto>>(addresses);
             return addressesDto;
         }
-        public async Task<UpdateAddressDto> UpdateAddressAsync(int customerId, int addressId, UpdateAddressDto addressDto)
+        public async Task<UpdateAddressDto> UpdateCustomerAddressAsync(int customerId, int addressId, UpdateAddressDto addressDto)
         {
             var user = await _userRepository.GetByIdAsync(customerId);
-            if (user == null)
-            {
-                throw new NotFoundException(customerId);
-            }
-            var existingAddress = await _addressRepository.GetByIdAsync(addressId);
+            var existingAddress = await _addressRepository.GetCustomerAddressByIdAsync(addressId);
             if (existingAddress == null)
+            {
                 throw new NotFoundException(addressId);
-
-            if (existingAddress.CustomerProfileId != customerId)
-                throw new ForbiddenException("You cannot update this address.");
+            }
 
             _mapper.Map(addressDto, existingAddress);
 
-            var updatedAddress = await _addressRepository.UpdateAddressAsync(existingAddress);
+            var updatedAddress = await _addressRepository.UpdateCustomerAddressAsync(existingAddress);
 
             return _mapper.Map<UpdateAddressDto>(updatedAddress);
         }

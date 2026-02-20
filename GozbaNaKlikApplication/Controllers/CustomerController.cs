@@ -19,30 +19,33 @@ namespace GozbaNaKlikApplication.Controllers
 
         [Route("{customerId}")]
         [HttpPost]
-        public async Task<ActionResult<CreateAddressDto>> AddNewAddressAsync(CreateAddressDto addressDto, [FromRoute] int customerId)
+        [Authorize(Roles = "Customer")]
+        public async Task<ActionResult<CreateCustomerAddressDto>> AddNewCustomerAddressAsync([FromBody] CreateCustomerAddressDto addressDto, [FromRoute] int customerId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            return Ok(await _addressService.AddNewAddressAsync(addressDto, customerId));
+            return Ok(await _addressService.AddNewCustomerAddressAsync(addressDto, customerId));
         }
         [HttpDelete("{addressId}")]
-        public async Task<ActionResult<bool>> DeleteAddressAsync(int addressId)
+        public async Task<ActionResult<bool>> DeleteAddressAsync(int addressId, int customerId)
         {
-            return Ok(await _addressService.DeleteAddressAsync(addressId));
+            return Ok(await _addressService.DeleteAddressAsync(addressId, customerId));
         }
         [HttpGet("{customerId}/addresses")]
-        public async Task<ActionResult<List<ShowAddressDto>>> GetAllAddressesAsync([FromRoute] int customerId)
+        public async Task<ActionResult<List<ShowAddressDto>>> GetAllCustomerAddressesAsync([FromRoute] int customerId)
         {
-            return Ok(await _addressService.GetAllAddressesAsync(customerId));
+            return Ok(await _addressService.GetAllCustomerAddressesAsync(customerId));
         }
 
         [HttpPut("{customerId}/addresses/{addressId}")]
-        public async Task<ActionResult<UpdateAddressDto>> UpdateAddressAsync([FromRoute] int customerId, [FromRoute] int addressId, [FromBody] UpdateAddressDto address)
+        [Authorize(Roles = "Customer")]
+
+        public async Task<ActionResult<UpdateAddressDto>> UpdateCustomerAddressAsync([FromRoute] int customerId, [FromRoute] int addressId, [FromBody] UpdateAddressDto address)
         {
-            return Ok(await _addressService.UpdateAddressAsync(customerId, addressId, address));
+            return Ok(await _addressService.UpdateCustomerAddressAsync(customerId, addressId, address));
         }
     }
 }

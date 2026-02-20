@@ -23,7 +23,7 @@ public class MappingProfile : Profile
               opt => opt.MapFrom(src => src.Meals));
 
         CreateMap<User, UserPreviewDto>();
-        CreateMap<CreateAddressDto, Address>().ReverseMap();
+        CreateMap<CreateCustomerAddressDto, Address>().ReverseMap();
         CreateMap<Address, ShowAddressDto>();
         CreateMap<Address, UpdateAddressDto>().ReverseMap();
     }

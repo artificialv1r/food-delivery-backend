@@ -15,13 +15,13 @@ namespace GozbaNaKlikApplication.Repositories
             _context = context;
         }
 
-        public async Task<Address> GetByIdAsync(int id)
+        public async Task<Address> GetCustomerAddressByIdAsync(int id)
         {
             return await _context.Addresses
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<Address> AddNewAddressAsync(Address address)
+        public async Task<Address> AddNewCustomerAddressAsync(Address address)
         {
             _context.Addresses.Add(address);
             await _context.SaveChangesAsync();
@@ -35,7 +35,7 @@ namespace GozbaNaKlikApplication.Repositories
             return true;
         }
 
-        public async Task<List<Address>> GetAllAddressesAsync(int customerId)
+        public async Task<List<Address>> GetAllCustomerAddressesAsync(int customerId)
         {
             var addresses = await _context.Addresses
                 .Where(c => c.CustomerProfileId == customerId)
@@ -43,7 +43,7 @@ namespace GozbaNaKlikApplication.Repositories
             return addresses;
         }
 
-        public async Task<Address> UpdateAddressAsync(Address address)
+        public async Task<Address> UpdateCustomerAddressAsync(Address address)
         {
             _context.Addresses.Update(address);
             await _context.SaveChangesAsync();
