@@ -5,6 +5,7 @@ namespace GozbaNaKlikApplication.DTOs.Restaurant
 {
     public class ShowRestaurantDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
         public string OwnerUserName { get; set; }
