@@ -26,7 +26,7 @@ namespace GozbaNaKlikApplication.Services
 
             var meal = await _mealRepository.GetMealByIdAsync(mealId);
             if (meal == null)
-                throw new KeyNotFoundException("MEal not found.");
+                throw new KeyNotFoundException("Meal not found.");
 
             if (meal.RestaurantId != restaurant.Id)
                 throw new UnauthorizedAccessException("You are not authorized to delete this.");
