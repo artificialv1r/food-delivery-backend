@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+﻿using GozbaNaKlikApplication.DTOs.Meals;
+using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +39,41 @@ namespace GozbaNaKlikApplication.Controllers
             {
                 return Forbid(e.Message);
             }
+        }
+    
+        [HttpPost]
+        public async Task<IActionResult> CreateMeal(int restaurantId, [FromBody] CreateMealDto dto)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim);
+
+            try
+            {
+                ShowMealDto meal = await _mealService.CreateMealAsync(restaurantId, dto, userId);
+                return Ok(meal);
+            }
+            catch (ArgumentException e) { return BadRequest(e.Message); }
+            catch (KeyNotFoundException e) { return NotFound(e.Message); }
+            catch (UnauthorizedAccessException) { return Forbid(); }
+        }
+
+        [Authorize(Roles = "Owner")]
+        [HttpPut("{mealId}")]
+        public async Task<IActionResult> UpdateMeal(int restaurantId, int mealId, [FromBody] UpdateMealDto dto)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim);
+
+            try
+            {
+                ShowMealDto meal = await _mealService.UpdateMealAsync(restaurantId, mealId, dto, userId);
+                return Ok(meal);
+            }
+            catch (ArgumentException e) { return BadRequest(e.Message); }
+            catch (KeyNotFoundException e) { return NotFound(e.Message); }
+            catch (UnauthorizedAccessException) { return Forbid(); }
         }
     }
 }

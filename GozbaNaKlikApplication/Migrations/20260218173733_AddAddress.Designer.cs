@@ -3,6 +3,7 @@ using System;
 using GozbaNaKlikApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GozbaNaKlikApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260218173733_AddAddress")]
+    partial class AddAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,6 +81,7 @@ namespace GozbaNaKlikApplication.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("StreetNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -345,7 +349,7 @@ namespace GozbaNaKlikApplication.Migrations
             modelBuilder.Entity("GozbaNaKlikApplication.Models.Address", b =>
                 {
                     b.HasOne("GozbaNaKlikApplication.Models.CustomerProfile", "CustomerProfile")
-                        .WithMany("CustomerAddresses")
+                        .WithMany("Addresses")
                         .HasForeignKey("CustomerProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -421,7 +425,7 @@ namespace GozbaNaKlikApplication.Migrations
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.CustomerProfile", b =>
                 {
-                    b.Navigation("CustomerAddresses");
+                    b.Navigation("Addresses");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.OwnerProfile", b =>
