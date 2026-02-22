@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
@@ -13,18 +14,35 @@ namespace GozbaNaKlikApplication.Controllers;
 public class RestaurantsController : ControllerBase
 {
     private readonly IRestaurantService _restaurantService;
+    private readonly IMealService _mealService;
 
-    public RestaurantsController(IRestaurantService restaurantService)
+    public RestaurantsController(IRestaurantService restaurantService,IMealService mealService)
     {
         _restaurantService = restaurantService;
+        _mealService = mealService;
     }
-
 
     [Authorize(Roles = "Administrator")]
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetAllRestaurantsPaged([FromQuery] int page = 1,[FromQuery] int pageSize = 5)
+    public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetAllRestaurantsPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
     {
         return Ok(await _restaurantService.GetAllRestaurantsPagedAsync(page, pageSize));
+    }
+
+
+    [Authorize(Roles = "Owner")]
+    [HttpGet("{restaurantId}/meals")]
+    public async Task<IActionResult> GetAllMealsFromRestaurant([FromRoute] int restaurantId)
+    {
+        try
+        {
+            int ownerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            return Ok(await _mealService.GetAllMealsFromRestaurant(restaurantId, ownerId));
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return StatusCode(403, e.Message);
+        }
     }
 
     [Authorize(Roles = "Administrator")]

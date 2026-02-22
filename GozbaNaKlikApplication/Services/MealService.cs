@@ -4,6 +4,7 @@ using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
 using AutoMapper;
 using GozbaNaKlikApplication.Models.Enums;
+using System.Linq;
 
 namespace GozbaNaKlikApplication.Services
 {
@@ -20,19 +21,19 @@ namespace GozbaNaKlikApplication.Services
             _mapper = mapper;
         }
 
-        public async Task<PaginatedList<ShowMealsDto>> GetMealsForOwner(int ownerId, int page, int pageSize, MealSortType sortType)
+        public async Task<List<ShowMealsDto>> GetAllMealsFromRestaurant(int restaurantId, int ownerId)
         {
-            var restaurant = await _restaurantRepository.GetRestaurantByOwnerIdAsync(ownerId);
+            var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
 
-            if (restaurant == null)
-                throw new KeyNotFoundException("Restaurant not found for this owner.");
+            if (restaurant == null || restaurant.OwnerId != ownerId)
+                throw new UnauthorizedAccessException("You are not authorized to view meals from this restaurant.");
 
-            var meals = await _mealRepository.GetAllSortedMealsByRestaurantId(restaurant.Id, page, pageSize, sortType);
+            var meals = await _mealRepository.GetAllMealsFromRestaurant(restaurantId);
 
-            var mealsDto = _mapper.Map<List<ShowMealsDto>>(meals.Items);
+            var mealsDto = meals.Select(m => _mapper.Map<ShowMealsDto>(m))
+                                .ToList();
 
-            return new PaginatedList<ShowMealsDto>(mealsDto, meals.Count, meals.PageIndex, pageSize);
+            return mealsDto;
         }
-
     }
 }

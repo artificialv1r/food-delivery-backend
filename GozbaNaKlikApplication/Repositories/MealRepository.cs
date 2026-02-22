@@ -17,26 +17,11 @@ namespace GozbaNaKlikApplication.Repositories
             _context = context;
         }
 
-        public async Task<PaginatedList<Meal>> GetAllSortedMealsByRestaurantId(
-            int restaurantId, int page, int pageSize, MealSortType sortType)
+        public async Task<List<Meal>> GetAllMealsFromRestaurant(int restaurantId)
         {
-            IQueryable<Meal> meals = _context.Meals
-                .Where(m => m.RestaurantId == restaurantId);
-
-
-            meals = sortType switch
-            {
-                MealSortType.PriceDesc => meals.OrderByDescending(m => m.Price),
-                _ => meals.OrderBy(m => m.Price)
-            };
-
-            int pageIndex = page - 1;
-            var count = await meals.CountAsync();
-            var items = await meals.Skip(pageIndex * pageSize)
-                                   .Take(pageSize)
-                                   .ToListAsync();
-
-            return new PaginatedList<Meal>(items, count, pageIndex, pageSize);
+            return await _context.Meals
+                .Where(m => m.RestaurantId == restaurantId)
+                .ToListAsync();
         }
     }
 }
