@@ -1,3 +1,4 @@
+﻿using System.Security.Claims;
 ﻿using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Services.Interfaces;
@@ -19,6 +20,27 @@ namespace GozbaNaKlikApplication.Controllers
         }
 
         [Authorize(Roles = "Owner")]
+        [HttpDelete("{mealId}")]
+        public async Task<IActionResult> DeleteMeal(int restaurantId, int mealId)
+        {
+            try
+            {
+                int ownerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+                await _mealService.DeleteMeal(restaurantId, mealId, ownerId);
+
+                return NoContent();
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Forbid(e.Message);
+            }
+        }
+    
         [HttpPost]
         public async Task<IActionResult> CreateMeal(int restaurantId, [FromBody] CreateMealDto dto)
         {
@@ -54,5 +76,4 @@ namespace GozbaNaKlikApplication.Controllers
             catch (UnauthorizedAccessException) { return Forbid(); }
         }
     }
-
 }

@@ -1,3 +1,6 @@
+using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Services.Interfaces;
+using GozbaNaKlikApplication.Repositories;
 ﻿using GozbaNaKlikApplication.Services.Interfaces;
 using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
@@ -13,13 +16,31 @@ namespace GozbaNaKlikApplication.Services
         private readonly IRestaurantRepository _restaurantRepository;
         private readonly IMapper _mapper;
 
-        public MealService(IMealRepository mealRepository, IRestaurantRepository restaurantRepository, IMapper mapper) 
+        public MealService(IMealRepository mealRepository, IRestaurantRepository restaurantRepository, IMapper mapper)
         {
             _mealRepository = mealRepository;
             _restaurantRepository = restaurantRepository;
             _mapper = mapper;
         }
 
+        public async Task<bool> DeleteMeal(int restaurantId, int mealId, int ownerId)
+        {
+            var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
+            if (restaurant == null)
+                throw new KeyNotFoundException("No restaurant for this owner.");
+
+            if (restaurant.OwnerId != ownerId)
+                throw new UnauthorizedAccessException("You can only delete meals from your own restaurant.");
+
+            var meal = await _mealRepository.GetMealByIdAsync(mealId);
+            if (meal == null)
+                throw new KeyNotFoundException("Meal not found.");
+
+            if (meal.RestaurantId != restaurant.Id)
+                throw new KeyNotFoundException("You are not authorized to delete this.");
+
+            return await _mealRepository.DeleteMealAsync(mealId);
+        }
         public async Task<ShowMealDto> CreateMealAsync(int restaurantId, CreateMealDto dto, int userId)
         {
             if (!dto.IsValid())
