@@ -35,6 +35,7 @@ namespace GozbaNaKlikApplication.Services
                                 .ToList();
 
             return mealsDto;
+        }
         public async Task<bool> DeleteMeal(int restaurantId, int mealId, int ownerId)
         {
             var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);

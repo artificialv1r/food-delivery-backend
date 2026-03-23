@@ -1,1 +1,79 @@
-﻿
+﻿using System.Security.Claims;
+using GozbaNaKlikApplication.DTOs.Meals;
+using GozbaNaKlikApplication.Models;
+using GozbaNaKlikApplication.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace GozbaNaKlikApplication.Controllers
+{
+    [Route("api/Restaurants/{restaurantId}/meals")]
+    [ApiController]
+    public class MealsController : ControllerBase
+    {
+        private readonly IMealService _mealService;
+
+        public MealsController(IMealService mealService)
+        {
+            _mealService = mealService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMeal(int restaurantId, [FromBody] CreateMealDto dto)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim);
+
+            try
+            {
+                ShowMealDto meal = await _mealService.CreateMealAsync(restaurantId, dto, userId);
+                return Ok(meal);
+            }
+            catch (ArgumentException e) { return BadRequest(e.Message); }
+            catch (KeyNotFoundException e) { return NotFound(e.Message); }
+            catch (UnauthorizedAccessException) { return Forbid(); }
+        }
+
+        [Authorize(Roles = "Owner")]
+        [HttpPut("{mealId}")]
+        public async Task<IActionResult> UpdateMeal(int restaurantId, int mealId, [FromBody] UpdateMealDto dto)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim);
+
+            try
+            {
+                ShowMealDto meal = await _mealService.UpdateMealAsync(restaurantId, mealId, dto, userId);
+                return Ok(meal);
+            }
+            catch (ArgumentException e) { return BadRequest(e.Message); }
+            catch (KeyNotFoundException e) { return NotFound(e.Message); }
+            catch (UnauthorizedAccessException) { return Forbid(); }
+        }
+
+        [Authorize(Roles = "Owner")]
+        [HttpDelete("{mealId}")]
+        public async Task<IActionResult> DeleteMeal(int restaurantId, int mealId)
+        {
+            try
+            {
+                int ownerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+                await _mealService.DeleteMeal(restaurantId, mealId, ownerId);
+
+                return NoContent();
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                return Forbid(e.Message);
+            }
+        }
+    }
+}
