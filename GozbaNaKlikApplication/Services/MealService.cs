@@ -1,12 +1,11 @@
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Services.Interfaces;
-using GozbaNaKlikApplication.Repositories;
-﻿using GozbaNaKlikApplication.Services.Interfaces;
 using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.Models;
-using GozbaNaKlikApplication.Models.Interfaces;
+using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Repositories;
 using AutoMapper;
+using System.Linq;
 
 namespace GozbaNaKlikApplication.Services
 {
@@ -23,6 +22,19 @@ namespace GozbaNaKlikApplication.Services
             _mapper = mapper;
         }
 
+        public async Task<List<ShowMealsDto>> GetAllMealsFromRestaurant(int restaurantId, int ownerId)
+        {
+            var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
+
+            if (restaurant == null || restaurant.OwnerId != ownerId)
+                throw new UnauthorizedAccessException("You are not authorized to view meals from this restaurant.");
+
+            var meals = await _mealRepository.GetAllMealsFromRestaurant(restaurantId);
+
+            var mealsDto = meals.Select(m => _mapper.Map<ShowMealsDto>(m))
+                                .ToList();
+
+            return mealsDto;
         public async Task<bool> DeleteMeal(int restaurantId, int mealId, int ownerId)
         {
             var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
