@@ -32,9 +32,11 @@ namespace GozbaNaKlikApplication.Services
             var meals = await _mealRepository.GetAllMealsFromRestaurant(restaurantId);
 
             var mealsDto = meals.Select(m => _mapper.Map<ShowMealsDto>(m))
-                                .ToList();
+                .ToList();
 
             return mealsDto;
+        }
+
         public async Task<bool> DeleteMeal(int restaurantId, int mealId, int ownerId)
         {
             var restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
