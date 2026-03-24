@@ -20,6 +20,7 @@ namespace GozbaNaKlikApplication.Repositories
             return await _context.Meals
                 .Where(m => m.RestaurantId == restaurantId)
                 .ToListAsync();
+        }
         public async Task<Meal> GetMealByIdAsync(int mealId)
         {
             return await _context.Meals.FindAsync(mealId);
