@@ -18,10 +18,16 @@ public class AppDbContext : DbContext
     public DbSet<Allergen> Allergens { get; set; }
     public DbSet<Address> Addresses { get; set; }
     
+    // Orders
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderMeal> OrderMeals { get; set; }
+    public DbSet<OrderReview> OrderReviews { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        // Users and profiles
         modelBuilder.Entity<User>()
             .HasOne(u => u.CustomerProfile)
             .WithOne(c => c.User)
@@ -41,8 +47,7 @@ public class AppDbContext : DbContext
             .HasOne(u => u.CourierProfile)
             .WithOne(c => c.User)
             .HasForeignKey<CourierProfile>(c => c.UserId);
-
-        //Postavljamo da nam strani kljuc ujedno bude i primarni
+        
         modelBuilder.Entity<CustomerProfile>()
             .HasKey(c => c.UserId);
         modelBuilder.Entity<AdministratorProfile>()
@@ -52,7 +57,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<CourierProfile>()
             .HasKey(c => c.UserId);
         
-        //Povezivanje modela Restoran i Jelo:
+        // Restaurants and meals
         modelBuilder.Entity<Restaurant>()
             .HasOne(r => r.Owner)
             .WithMany(o => o.MyRestaurants)
@@ -64,7 +69,8 @@ public class AppDbContext : DbContext
             .WithMany(r => r.Meals)
             .HasForeignKey(r => r.RestaurantId)
             .OnDelete(DeleteBehavior.Cascade);
-
+        
+        // Allergens
         modelBuilder.Entity<Allergen>()
             .HasKey(a => a.Id);
         
@@ -72,23 +78,104 @@ public class AppDbContext : DbContext
             .Property(a => a.Name).IsRequired()
             .HasMaxLength(100);
         
-        // Relacija Meal - Allergen
         modelBuilder.Entity<Meal>()
             .HasMany(m => m.MealAllergens)
             .WithMany()
             .UsingEntity(j => j.ToTable("MealAllergens"));
-            
-        // Relacija Customer - Allergen
+        
         modelBuilder.Entity<CustomerProfile>()
             .HasMany(c => c.CustomerAllergens)
             .WithMany()
             .UsingEntity(j => j.ToTable("CustomerAllergens"));
 
+        // Addresses
         modelBuilder.Entity<Address>()
-            .HasOne(c => c.CustomerProfile)
-            .WithMany(a => a.CustomerAddresses)
+            .HasOne(a => a.CustomerProfile)
+            .WithMany(c => c.CustomerAddresses)
             .HasForeignKey(a => a.CustomerProfileId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        // Orders
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.CustomerProfile)
+            .WithMany()
+            .HasForeignKey(o => o.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Restaurant)
+            .WithMany()
+            .HasForeignKey(o => o.RestaurantId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.CourierProfile)
+            .WithMany()
+            .HasForeignKey(o => o.CourierId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+        
+        modelBuilder.Entity<Order>()
+            .Property(o => o.MealsPrice)
+            .HasColumnType("decimal(18,2)");
+ 
+        modelBuilder.Entity<Order>()
+            .Property(o => o.DeliveryPrice)
+            .HasColumnType("decimal(18,2)");
+ 
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalPrice)
+            .HasColumnType("decimal(18,2)");
+        
+        // Order Meal
+        modelBuilder.Entity<OrderMeal>()
+            .HasKey(om => new { om.OrderId, om.MealId });
+ 
+        modelBuilder.Entity<OrderMeal>()
+            .HasOne(om => om.Order)
+            .WithMany(o => o.MealsOrdered)
+            .HasForeignKey(om => om.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<OrderMeal>()
+            .HasOne(om => om.Meal)
+            .WithMany()
+            .HasForeignKey(om => om.MealId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<OrderMeal>()
+            .Property(om => om.PriceAtOrder)
+            .HasColumnType("decimal(18,2)");
+        
+        // Order Review
+        modelBuilder.Entity<OrderReview>()
+            .HasOne(r => r.Order)
+            .WithOne(o => o.OrderReview)
+            .HasForeignKey<OrderReview>(r => r.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<OrderReview>()
+            .HasOne(r => r.Customer)
+            .WithMany()
+            .HasForeignKey(r => r.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<OrderReview>()
+            .HasOne(r => r.Courier)
+            .WithMany()
+            .HasForeignKey(r => r.CourierId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<OrderReview>()
+            .HasOne(r => r.Restaurant)
+            .WithMany()
+            .HasForeignKey(r => r.RestaurantId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<OrderReview>()
+            .ToTable(t => t.HasCheckConstraint(
+                "CK_OrderReview_Grades",
+                "\"RestaurantGrade\" BETWEEN 1 AND 5 AND \"CourierGrade\" BETWEEN 1 AND 5"));
             
         modelBuilder.Entity<User>()
             .HasData(new User { Id = 1, Username = "Admin1", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Aleksandar", Surname = "Popov", Email = "aleksandarpopov@gmail.com", Role = Models.Enums.UserRole.Administrator },
