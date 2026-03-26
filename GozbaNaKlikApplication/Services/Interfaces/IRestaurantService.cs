@@ -11,5 +11,6 @@ namespace GozbaNaKlikApplication.Services.Interfaces
         Task<Restaurant> UpdateRestaurantAsync(int id, UpdateRestaurantDto dto);
         Task<PaginatedList<ShowRestaurantDto>> GetFilteredAndSortedRestaurantsPagedAsync(int page, int pageSize, RestaurantSortType sortType, RestaurantSearchQuery filter);
         Task<Restaurant> GetRestaurantById(int id);
+        Task<UpdateRestaurantDto> GetOneRestaurant(int id);
     }
 }
