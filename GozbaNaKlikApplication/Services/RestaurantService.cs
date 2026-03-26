@@ -22,6 +22,17 @@ public class RestaurantService : IRestaurantService
         _mapper = mapper;
     }
 
+    public async Task<UpdateRestaurantDto> GetOneRestaurant(int id)
+    {
+        var restaurant = await _restaurantRepository.GetByIdAsync(id);
+        if (restaurant == null)
+        {
+            throw new NotFoundException(id);
+        }
+
+        return _mapper.Map<UpdateRestaurantDto>(restaurant);
+    }
+
     public async Task<Restaurant> GetRestaurantById(int id)
     {
         var restaurant = await _restaurantRepository.GetByIdAsync(id);

@@ -22,6 +22,12 @@ public class RestaurantsController : ControllerBase
         _mealService = mealService;
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UpdateRestaurantDto>> GetRestaurantByIdAsync(int id)
+    {
+        return Ok(await _restaurantService.GetOneRestaurant(id));  
+    }
+
     [Authorize(Roles = "Administrator")]
     [HttpGet]
     public async Task<ActionResult<PaginatedList<ShowRestaurantDto>>> GetAllRestaurantsPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 5)

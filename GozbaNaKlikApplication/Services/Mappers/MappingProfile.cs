@@ -19,6 +19,7 @@ public class MappingProfile : Profile
 
         CreateMap<UpdateMealDto, Meal>();
 
+        CreateMap<UpdateRestaurantDto, Restaurant>().ReverseMap();
         CreateMap<Restaurant, ShowRestaurantDto>()
               .ForMember(owner => owner.OwnerUserName,
               opt => opt.MapFrom(src => src.Owner.User.Name + " " + src.Owner.User.Surname))
@@ -44,5 +45,6 @@ public class MappingProfile : Profile
         CreateMap<OrderMeal, ShowOrderMealDto>()
             .ForMember(dest => dest.MealName,
                 opt => opt.MapFrom(src => src.Meal.Name));
+
     }
 }
