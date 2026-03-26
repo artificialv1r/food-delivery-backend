@@ -52,7 +52,7 @@ public class UserService: IUserService
 
     public async Task<User> AddUserAsync(User user)
     {
-        if (user.Role != UserRole.Customer)
+        if (user.Role != UserRole.Customer && user.Role != UserRole.Owner && user.Role != UserRole.Courier)
         {
             throw new BadRequestException("Invalid role for user registration. ");
         }
