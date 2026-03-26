@@ -22,6 +22,16 @@ public class RestaurantService : IRestaurantService
         _mapper = mapper;
     }
 
+    public async Task<Restaurant> GetRestaurantById(int id)
+    {
+        var restaurant = await _restaurantRepository.GetByIdAsync(id);
+        if (restaurant == null)
+        {
+            throw new NotFoundException(id);
+        }
+
+        return restaurant;
+    }
 
     public async Task<PaginatedList<ShowRestaurantDto>> GetAllRestaurantsPagedAsync(int page, int pageSize)
     {

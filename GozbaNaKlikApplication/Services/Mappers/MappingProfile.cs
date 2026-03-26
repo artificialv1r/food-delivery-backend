@@ -2,6 +2,7 @@ using AutoMapper;
 using GozbaNaKlikApplication.DTOs.Address;
 using GozbaNaKlikApplication.DTOs.Auth;
 using GozbaNaKlikApplication.DTOs.Meals;
+using GozbaNaKlikApplication.DTOs.Orders;
 using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Models;
 
@@ -30,5 +31,18 @@ public class MappingProfile : Profile
         CreateMap<CreateCustomerAddressDto, Address>().ReverseMap();
         CreateMap<Address, ShowAddressDto>();
         CreateMap<Address, UpdateAddressDto>().ReverseMap();
+        
+        CreateMap<CreateOrderDto, Order>();
+        CreateMap<OrderMealDto, OrderMeal>();
+        
+        CreateMap<Order, ShowOrderDto>()
+            .ForMember(dest => dest.RestaurantName,
+                opt => opt.MapFrom(src => src.Restaurant.Name))
+            .ForMember(dest => dest.Status,
+                opt => opt.MapFrom(src => src.OrderStatus.ToString()));
+
+        CreateMap<OrderMeal, ShowOrderMealDto>()
+            .ForMember(dest => dest.MealName,
+                opt => opt.MapFrom(src => src.Meal.Name));
     }
 }
