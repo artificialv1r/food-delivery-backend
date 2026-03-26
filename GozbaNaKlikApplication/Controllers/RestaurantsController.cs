@@ -38,7 +38,7 @@ public class RestaurantsController : ControllerBase
     }
 
     [Authorize(Roles = "Customer")]
-    [HttpGet("{restaurantId}/allmeals")]
+    [HttpGet("{restaurantId}/menu")]
     public async Task<ActionResult<List<MealsDto>>> GetAllMealsFromOneRestaurantAsync([FromRoute] int restaurantId)
     {
         var restaurant = await _restaurantService.GetRestaurantById(restaurantId);

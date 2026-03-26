@@ -58,15 +58,7 @@ public class RestaurantRepository : IRestaurantRepository
         PaginatedList<Restaurant> result = new PaginatedList<Restaurant>(items, count, pageIndex, pageSize);
         return result;
     }
-    public async Task<List<Meal>> GetAllMealsFromOneRestaurantAsync(int restaruantId)
-    {
-        var meals = await _context.Meals
-        .Where(m => m.RestaurantId == restaruantId)
-        .Include(m => m.MealAllergens)
-        .ToListAsync();
 
-        return meals;
-    }
     public async Task<Restaurant> AddNewRestaurantAsync(Restaurant restaurant)
     {
         _context.Restaurants.Add(restaurant);

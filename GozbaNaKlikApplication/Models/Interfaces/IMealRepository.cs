@@ -12,5 +12,6 @@ namespace GozbaNaKlikApplication.Models.Interfaces
         Task<Meal> CreateMealAsync(Meal meal);
         Task<Meal> UpdateMealAsync(Meal meal);
         Task<Meal?> GetByIdAsync(int id);
+        Task<List<Meal>> GetAllMealsFromOneRestaurantAsync(int restaruantId);
     }
 }

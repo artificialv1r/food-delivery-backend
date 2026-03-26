@@ -13,13 +13,15 @@ public class RestaurantService : IRestaurantService
 {
     private readonly IRestaurantRepository _restaurantRepository;
     private readonly IOwnerRepository _ownerRepository;
+    private readonly IMealRepository _mealRepository;
     private readonly IMapper _mapper;
 
 
-    public RestaurantService(IRestaurantRepository restaurantRepository, IOwnerRepository ownerRepository, IMapper mapper)
+    public RestaurantService(IRestaurantRepository restaurantRepository, IOwnerRepository ownerRepository, IMealRepository mealRepository,IMapper mapper)
     {
         _restaurantRepository = restaurantRepository;
         _ownerRepository = ownerRepository;
+        _mealRepository = mealRepository;
         _mapper = mapper;
     }
 
@@ -69,7 +71,7 @@ public class RestaurantService : IRestaurantService
 
     public async Task<List<MealsDto>> GetAllMealsFromOneRestaurantAsync(int restaurantId)
     {
-        var meals = await _restaurantRepository.GetAllMealsFromOneRestaurantAsync(restaurantId);
+        var meals = await _mealRepository.GetAllMealsFromOneRestaurantAsync(restaurantId);
         return _mapper.Map<List<MealsDto>>(meals);
     }
 
