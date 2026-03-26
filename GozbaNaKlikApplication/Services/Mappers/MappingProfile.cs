@@ -14,10 +14,9 @@ public class MappingProfile : Profile
     {
 
         CreateMap<CreateMealDto, Meal>();
-
         CreateMap<Meal, ShowMealDto>();
-
         CreateMap<UpdateMealDto, Meal>();
+        CreateMap<MealsDto, Meal>().ReverseMap();
 
         CreateMap<UpdateRestaurantDto, Restaurant>().ReverseMap();
         CreateMap<Restaurant, ShowRestaurantDto>()

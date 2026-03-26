@@ -1,5 +1,6 @@
 using AutoMapper;
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.DTOs.Restaurant;
 using GozbaNaKlikApplication.Exceptions;
 using GozbaNaKlikApplication.Models;
@@ -64,6 +65,12 @@ public class RestaurantService : IRestaurantService
         var dtos = restaurants.Items
             .Select(_mapper.Map<ShowRestaurantDto>).ToList();
         return new PaginatedList<ShowRestaurantDto>(dtos, restaurants.Count, restaurants.PageIndex, pageSize);
+    }
+
+    public async Task<List<MealsDto>> GetAllMealsFromOneRestaurantAsync(int restaurantId)
+    {
+        var meals = await _restaurantRepository.GetAllMealsFromOneRestaurantAsync(restaurantId);
+        return _mapper.Map<List<MealsDto>>(meals);
     }
 
     public async Task<Restaurant> CreateRestaurantAsync(AddRestaurantDto dto)
