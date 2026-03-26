@@ -17,7 +17,7 @@ public class Order
 
     // Timeline and status
     public OrderStatus OrderStatus { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }  = DateTime.UtcNow;
     public DateTime? EstimatedReadyAt { get; set; }
     public DateTime? PickedUpAt { get; set; }
     public DateTime? DeliveredAt { get; set; }

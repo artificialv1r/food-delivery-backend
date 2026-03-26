@@ -101,6 +101,8 @@ builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IMealRepository, MealRepository>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 var app = builder.Build();
