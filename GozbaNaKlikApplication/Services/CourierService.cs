@@ -20,11 +20,6 @@ public class CourierService : ICourierService
 
     public async Task<CourierProfile> AddCourierAsync(CourierProfile courier)
     {
-        var existing = await _userRepository.GetByUsername(courier.User.Username);
-        if (existing != null)
-        {
-            throw new BadRequestException("This user already exists");
-        }
         return await _courierRepository.AddNewCourierAsync(courier);
     }
 }
