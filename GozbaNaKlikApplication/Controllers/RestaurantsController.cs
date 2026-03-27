@@ -1,11 +1,13 @@
-using System.Security.Claims;
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.DTOs.Restaurant;
+using GozbaNaKlikApplication.Exceptions;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Services;
 using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GozbaNaKlikApplication.Controllers;
 
@@ -35,6 +37,17 @@ public class RestaurantsController : ControllerBase
         return Ok(await _restaurantService.GetAllRestaurantsPagedAsync(page, pageSize));
     }
 
+    [Authorize(Roles = "Customer")]
+    [HttpGet("{restaurantId}/menu")]
+    public async Task<ActionResult<List<MealsDto>>> GetAllMealsFromOneRestaurantAsync([FromRoute] int restaurantId)
+    {
+        var restaurant = await _restaurantService.GetRestaurantById(restaurantId);
+        if(restaurant == null)
+        {
+            throw new NotFoundException(restaurantId);
+        }
+        return Ok(await _restaurantService.GetAllMealsFromOneRestaurantAsync(restaurantId));
+    }
 
     [Authorize(Roles = "Owner")]
     [HttpGet("{restaurantId}/meals")]

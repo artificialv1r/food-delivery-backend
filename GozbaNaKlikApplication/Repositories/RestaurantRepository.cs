@@ -40,7 +40,7 @@ public class RestaurantRepository : IRestaurantRepository
             .Include(r => r.Owner)
             .ThenInclude(u => u.User)
             .Include(r => r.Meals);
-        
+
         restaurants = FilterRestaurants(restaurants, filter);
 
         restaurants = sortType switch
@@ -48,7 +48,7 @@ public class RestaurantRepository : IRestaurantRepository
             RestaurantSortType.NameDesc => restaurants.OrderByDescending(r => r.Name),
             _ => restaurants.OrderBy(r => r.Name)
         };
-        
+
         int pageIndex = page - 1;
         var count = await restaurants.CountAsync();
         var items = await restaurants
@@ -98,19 +98,19 @@ public class RestaurantRepository : IRestaurantRepository
         return await _context.Restaurants
             .FirstOrDefaultAsync(r => r.OwnerId == ownerId);
     }
-    
+
     private static IQueryable<Restaurant> FilterRestaurants(IQueryable<Restaurant> restaurants, RestaurantSearchQuery filter)
     {
         if (!string.IsNullOrWhiteSpace(filter.Name))
         {
-            restaurants = restaurants.Where(r=>r.Name.ToLower().Contains(filter.Name.ToLower()));
+            restaurants = restaurants.Where(r => r.Name.ToLower().Contains(filter.Name.ToLower()));
         }
-        
+
         if (!string.IsNullOrWhiteSpace(filter.MealName))
         {
             restaurants = restaurants.Where(r => r.Meals.Any(m => m.Name.ToLower().Contains(filter.MealName.ToLower())));
         }
-        
+
         return restaurants;
     }
 }
