@@ -35,6 +35,18 @@ public class RestaurantService : IRestaurantService
 
         return _mapper.Map<UpdateRestaurantDto>(restaurant);
     }
+    
+    public async Task<List<ShowRestaurantDto>> GetAllRestaurantsFromOneOwner(int ownerId)
+    {
+        var restaurants = await _restaurantRepository.GetAllRestaurantsByOwnerIdAsync(ownerId);
+        if (!restaurants.Any())
+        {
+            throw new NotFoundException(ownerId);
+        }
+
+        return _mapper.Map<List<ShowRestaurantDto>>(restaurants);
+
+    }
 
     public async Task<Restaurant> GetRestaurantById(int id)
     {
@@ -133,4 +145,6 @@ public class RestaurantService : IRestaurantService
 
         return await _restaurantRepository.DeleteRestaurantAsync(id);
     }
+
+   
 }

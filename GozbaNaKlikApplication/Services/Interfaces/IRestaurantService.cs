@@ -14,6 +14,7 @@ namespace GozbaNaKlikApplication.Services.Interfaces
         Task<Restaurant> GetRestaurantById(int id);
         Task<UpdateRestaurantDto> GetOneRestaurant(int id);
         Task<List<MealsDto>> GetAllMealsFromOneRestaurantAsync(int restaurantId);
+        Task<List<ShowRestaurantDto>> GetAllRestaurantsFromOneOwner(int ownerId);
 
     }
 }

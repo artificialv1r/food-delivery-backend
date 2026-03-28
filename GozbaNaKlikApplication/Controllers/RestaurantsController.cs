@@ -130,4 +130,12 @@ public class RestaurantsController : ControllerBase
     {
         return Ok(await _restaurantService.GetFilteredAndSortedRestaurantsPagedAsync(page, pageSize, sortType, filter));
     }
+
+    [Authorize(Roles = "Owner")]
+    [HttpGet("owner")]
+    public async Task<ActionResult<ShowRestaurantDto>> GetAllRestaurantsFromOneOwner()
+    {
+        var ownerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        return Ok(await _restaurantService.GetAllRestaurantsFromOneOwner(ownerId));
+    }
 }
