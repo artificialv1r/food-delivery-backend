@@ -74,6 +74,16 @@ public class RestaurantRepository : IRestaurantRepository
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
+    public async Task<List<Restaurant>>GetAllRestaurantsByOwnerIdAsync(int ownerId)
+    {
+        return await _context.Restaurants
+            .Where(r => r.OwnerId == ownerId)
+            .Include(r => r.Meals)
+            .Include(r => r.Owner)
+            .ThenInclude(o => o.User)
+            .ToListAsync();
+    }
+
     public async Task<Restaurant> UpdateRestaurantAsync(Restaurant restaurant)
     {
         _context.Restaurants.Update(restaurant);
