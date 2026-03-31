@@ -11,7 +11,7 @@ namespace GozbaNaKlikApplication.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
-    
+
     public OrderController(IOrderService orderService)
     {
         _orderService = orderService;
@@ -27,9 +27,19 @@ public class OrderController : ControllerBase
         }
         var customerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        
+
         return Ok(await _orderService.CreateOrder(orderDto, customerId));
     }
-    
-    
+
+    [Authorize(Roles = "Customer")]
+    [HttpPost("{orderId}/review")]
+    public async Task<ActionResult> CreateOrderReviewAsync([FromRoute] int orderId, OrderReviewDto orderReviewDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var customerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        return Ok(await _orderService.CreateOrderReviewAsync(orderId, customerId, orderReviewDto));
+    }
 }

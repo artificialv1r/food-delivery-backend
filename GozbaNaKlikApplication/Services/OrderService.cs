@@ -15,7 +15,7 @@ public class OrderService : IOrderService
     private readonly IRestaurantService _restaurantService;
     private readonly IMapper _mapper;
 
-    
+
     public OrderService(IOrderRepository orderRepository, IRestaurantService restaurantService, IMapper mapper)
     {
         _orderRepository = orderRepository;
@@ -26,11 +26,11 @@ public class OrderService : IOrderService
     public async Task<ShowOrderDto> CreateOrder(CreateOrderDto orderDto, int customerId)
     {
         var restaurant = await _restaurantService.GetRestaurantById(orderDto.RestaurantId);
-        
+
         var orderMeals = new List<OrderMeal>();
         decimal mealsPrice = 0;
         decimal deliveryPrice = 200;
-        
+
         foreach (var mealDto in orderDto.MealsOrdered)
         {
             var meal = restaurant.Meals.FirstOrDefault(m => m.Id == mealDto.MealId);
@@ -38,18 +38,18 @@ public class OrderService : IOrderService
             {
                 throw new NotFoundException(mealDto.MealId);
             }
-    
+
             var orderMeal = new OrderMeal
             {
                 MealId = meal.Id,
                 Quantity = mealDto.Quantity,
                 PriceAtOrder = meal.Price
             };
-    
+
             orderMeals.Add(orderMeal);
             mealsPrice += meal.Price * mealDto.Quantity;
         }
-        
+
         var order = new Order
         {
             CustomerId = customerId,
@@ -69,5 +69,41 @@ public class OrderService : IOrderService
         var createdOrder = await _orderRepository.CreateOrder(order);
         return _mapper.Map<ShowOrderDto>(createdOrder);
     }
-    
+
+    public async Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto)
+    {
+        var order = await _orderRepository.GetOrderByIdAsync(orderId);
+
+        if (order == null)
+        {
+            throw new NotFoundException(orderId);
+        }
+
+        if (order.OrderStatus != OrderStatus.Delivered)
+        {
+            throw new BadRequestException("You can not leave review for this order.");
+        }
+
+        if (order.CustomerId != customerId)
+        {
+            throw new ForbiddenException("You can not leave review for this order.");
+        }
+
+        var review = new OrderReview
+        {
+            RestaurantGrade = orderReviewDto.RestaurantGrade,
+            RestaurantComment = orderReviewDto.RestaurantComment,
+            CourierGrade = orderReviewDto.CourierGrade,
+            CourierComment = orderReviewDto.CourierComment,
+            CreatedAt = DateTime.Now,
+            OrderId = orderId,
+            CustomerId = customerId,
+            RestaurantId = order.RestaurantId,
+            CourierId = order.CourierId!.Value
+        };
+
+        var createdReview = await _orderRepository.CreateOrderReviewAsync(review);
+
+        return _mapper.Map<OrderReviewDto>(createdReview);
+    }
 }
