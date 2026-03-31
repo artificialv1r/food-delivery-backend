@@ -12,13 +12,15 @@ namespace GozbaNaKlikApplication.Services;
 public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly IOrderReviewRepository _orderReviewRepository;
     private readonly IRestaurantService _restaurantService;
     private readonly IMapper _mapper;
 
 
-    public OrderService(IOrderRepository orderRepository, IRestaurantService restaurantService, IMapper mapper)
+    public OrderService(IOrderRepository orderRepository,IOrderReviewRepository orderReviewRepository,IRestaurantService restaurantService, IMapper mapper)
     {
         _orderRepository = orderRepository;
+        _orderReviewRepository = orderReviewRepository;
         _restaurantService = restaurantService;
         _mapper = mapper;
     }
@@ -173,7 +175,7 @@ public class OrderService : IOrderService
             throw new ForbiddenException("You cannot leave a review for this order.");
         }
 
-        var existingReview = await _orderRepository.GetReviewByOrderId(orderId);
+        var existingReview = await _orderReviewRepository.GetReviewByOrderId(orderId);
         if (existingReview != null)
         {
             throw new BadRequestException("You already reviewed this order.");
@@ -192,7 +194,7 @@ public class OrderService : IOrderService
             CourierId = order.CourierId!.Value
         };
 
-        var createdReview = await _orderRepository.CreateOrderReviewAsync(review);
+        var createdReview = await _orderReviewRepository.CreateOrderReviewAsync(review);
 
         return _mapper.Map<OrderReviewDto>(createdReview);
     }

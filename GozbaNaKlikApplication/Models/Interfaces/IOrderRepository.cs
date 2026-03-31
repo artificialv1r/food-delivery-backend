@@ -11,6 +11,4 @@ public interface IOrderRepository
     Task<List<Order>> GetAcceptedOrdersByRestaurant(int restaurantId);
     Task<List<Order>> GetCanceledOrdersByRestaurant(int restaurantId);
     Task<Order> GetOrderByIdAsync(int orderId);
-    Task<OrderReview> CreateOrderReviewAsync(OrderReview orderReview);
-    Task<OrderReview?> GetReviewByOrderId(int orderId);
 }

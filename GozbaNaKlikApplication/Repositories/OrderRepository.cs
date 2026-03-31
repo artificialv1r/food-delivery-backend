@@ -91,18 +91,4 @@ public class OrderRepository : IOrderRepository
             .ThenInclude(om => om.Meal)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
-
-    public async Task<OrderReview> CreateOrderReviewAsync(OrderReview orderReview)
-    {
-        _context.OrderReviews.Add(orderReview);
-        await _context.SaveChangesAsync();
-        return orderReview;
-    }
-
-    public async Task<OrderReview?> GetReviewByOrderId(int orderId)
-    {
-        return await _context.OrderReviews
-            .FirstOrDefaultAsync(r => r.OrderId == orderId);
-    }
-
 }
