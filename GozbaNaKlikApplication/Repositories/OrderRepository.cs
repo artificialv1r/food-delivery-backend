@@ -49,7 +49,29 @@ public class OrderRepository : IOrderRepository
             .OrderBy(o => o.CreatedAt)
             .ToListAsync();
     }
- 
+    
+    public async Task<List<Order>> GetAcceptedOrdersByRestaurant(int restaurantId)
+    {
+        return await _context.Orders
+            .Where(o => o.RestaurantId == restaurantId && o.OrderStatus == OrderStatus.Accepted)
+            .Include(o => o.Restaurant)
+            .Include(o => o.MealsOrdered)
+            .ThenInclude(om => om.Meal)
+            .OrderBy(o => o.CreatedAt)
+            .ToListAsync();
+    }
+    
+    public async Task<List<Order>> GetCanceledOrdersByRestaurant(int restaurantId)
+    {
+        return await _context.Orders
+            .Where(o => o.RestaurantId == restaurantId && o.OrderStatus == OrderStatus.Canceled)
+            .Include(o => o.Restaurant)
+            .Include(o => o.MealsOrdered)
+            .ThenInclude(om => om.Meal)
+            .OrderBy(o => o.CreatedAt)
+            .ToListAsync();
+    }
+    
     public async Task<Order?> GetOrderById(int orderId)
     {
         return await _context.Orders
