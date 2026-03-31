@@ -1,4 +1,6 @@
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using GozbaNaKlikApplication.DTOs.Orders;
 using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +32,19 @@ public class OrderController : ControllerBase
         
         return Ok(await _orderService.CreateOrder(orderDto, customerId));
     }
-    
-    
+
+    [Authorize(Roles = "Courier")]
+    [HttpGet("active")]
+    public async Task<IActionResult> GetActiveCourierOrder()
+    {
+        int courierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var order = await _orderService.GetActiveCourierOrder(courierId);
+
+        if (order == null)
+            return NoContent();
+
+        return Ok(order);
+    }
+
+
 }

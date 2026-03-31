@@ -32,10 +32,10 @@ public class MappingProfile : Profile
         CreateMap<CreateCustomerAddressDto, Address>().ReverseMap();
         CreateMap<Address, ShowAddressDto>();
         CreateMap<Address, UpdateAddressDto>().ReverseMap();
-        
+
         CreateMap<CreateOrderDto, Order>();
         CreateMap<OrderMealDto, OrderMeal>();
-        
+
         CreateMap<Order, ShowOrderDto>()
             .ForMember(dest => dest.RestaurantName,
                 opt => opt.MapFrom(src => src.Restaurant.Name))
@@ -45,6 +45,18 @@ public class MappingProfile : Profile
         CreateMap<OrderMeal, ShowOrderMealDto>()
             .ForMember(dest => dest.MealName,
                 opt => opt.MapFrom(src => src.Meal.Name));
+
+        CreateMap<Order, ShowCourierOrderDto>()
+            .ForMember(dest => dest.Meals, opt => opt.MapFrom(src =>
+                src.MealsOrdered.Select(om => new CourierOrderMealDto
+                {
+                    MealName = om.Meal.Name,
+                    Quantity = om.Quantity
+                }).ToList()))
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.CustomerProfile.User.Name))
+            .ForMember(dest => dest.CustomerSurname, opt => opt.MapFrom(src => src.CustomerProfile.User.Surname))
+            .ForMember(dest => dest.CustomerEmail, opt => opt.MapFrom(src => src.CustomerProfile.User.Email))
+            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString())); 
 
     }
 }
