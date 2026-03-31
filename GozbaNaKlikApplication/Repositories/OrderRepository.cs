@@ -39,6 +39,17 @@ public class OrderRepository : IOrderRepository
             .FirstAsync(o => o.Id == order.Id);
     }
 
+    public async Task<Order?> GetActiveCourierOrder(int courierId)
+    {
+        return await _context.Orders
+            .Include(o => o.MealsOrdered)
+                .ThenInclude(OrderMeal => OrderMeal.Meal)
+            .Include(o => o.CustomerProfile)
+                .ThenInclude(cp => cp.User)
+            .FirstOrDefaultAsync(o =>
+                          o.CourierId == courierId &&        
+                          (o.OrderStatus == OrderStatus.PickupInProgress ||
+                          o.OrderStatus == OrderStatus.DeliveryInProgress));
     public async Task<Order> UpdateOrder(Order order)
     {
         _context.Orders.Update(order);
