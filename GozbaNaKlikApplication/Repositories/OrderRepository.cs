@@ -47,9 +47,10 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.CustomerProfile)
                 .ThenInclude(cp => cp.User)
             .FirstOrDefaultAsync(o =>
-                          o.CourierId == courierId &&        
+                          o.CourierId == courierId &&
                           (o.OrderStatus == OrderStatus.PickupInProgress ||
                           o.OrderStatus == OrderStatus.DeliveryInProgress));
+    }
     public async Task<Order> UpdateOrder(Order order)
     {
         _context.Orders.Update(order);
