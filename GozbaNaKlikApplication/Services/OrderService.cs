@@ -70,6 +70,90 @@ public class OrderService : IOrderService
         return _mapper.Map<ShowOrderDto>(createdOrder);
     }
 
+    public async Task<List<ShowOrderDto>> GetPendingOrdersByRestaurant(int restaurantId, int requestingUserId, string role)
+    {
+        await AuthorizeRestaurantAccess(restaurantId, requestingUserId, role);
+
+        var orders = await _orderRepository.GetPendingOrdersByRestaurant(restaurantId);
+        return _mapper.Map<List<ShowOrderDto>>(orders);
+    }
+
+    public async Task<List<ShowOrderDto>> GetAcceptedOrdersByRestaurant(int restaurantId, int requestingUserId, string role)
+    {
+        await AuthorizeRestaurantAccess(restaurantId, requestingUserId, role);
+
+        var orders = await _orderRepository.GetAcceptedOrdersByRestaurant(restaurantId);
+        return _mapper.Map<List<ShowOrderDto>>(orders);
+    }
+
+    public async Task<List<ShowOrderDto>> GetCanceledOrdersByRestaurant(int restaurantId, int requestingUserId, string role)
+    {
+        await AuthorizeRestaurantAccess(restaurantId, requestingUserId, role);
+
+        var orders = await _orderRepository.GetCanceledOrdersByRestaurant(restaurantId);
+        return _mapper.Map<List<ShowOrderDto>>(orders);
+    }
+
+    public async Task<ShowOrderDto> AcceptOrder(int orderId, AcceptOrderDto acceptOrderDto, int requestingUserId, string role)
+    {
+        var order = await GetOrderOrThrow(orderId);
+
+        await AuthorizeRestaurantAccess(order.RestaurantId, requestingUserId, role);
+
+        if (order.OrderStatus != OrderStatus.OnHold)
+        {
+            throw new BadRequestException($"Only orders with status OnHold can be accepted. Current status: {order.OrderStatus}");
+        }
+
+        order.OrderStatus = OrderStatus.Accepted;
+        order.EstimatedReadyAt = acceptOrderDto.EstimatedReadyAt;
+
+        var updatedOrder = await _orderRepository.UpdateOrder(order);
+        return _mapper.Map<ShowOrderDto>(updatedOrder);
+    }
+
+    public async Task<ShowOrderDto> CancelOrder(int orderId, int requestingUserId, string role)
+    {
+        var order = await GetOrderOrThrow(orderId);
+
+        await AuthorizeRestaurantAccess(order.RestaurantId, requestingUserId, role);
+
+        if (order.OrderStatus != OrderStatus.OnHold)
+        {
+            throw new BadRequestException($"Only orders with status OnHold can be canceled. Current status: {order.OrderStatus}");
+        }
+
+        order.OrderStatus = OrderStatus.Canceled;
+
+        var updatedOrder = await _orderRepository.UpdateOrder(order);
+        return _mapper.Map<ShowOrderDto>(updatedOrder);
+    }
+
+    private async Task<Order> GetOrderOrThrow(int orderId)
+    {
+        var order = await _orderRepository.GetOrderById(orderId);
+        if (order == null)
+        {
+            throw new NotFoundException(orderId);
+        }
+        return order;
+    }
+
+    private async Task AuthorizeRestaurantAccess(int restaurantId, int requestingUserId, string role)
+    {
+        var restaurant = await _restaurantService.GetRestaurantById(restaurantId);
+
+        if (role == "Owner" && restaurant.OwnerId != requestingUserId)
+        {
+            throw new ForbiddenException("You do not own this restaurant.");
+        }
+
+        // TODO: Kada se prosiri entitet restorana sa Employees svojstvom
+        // if (role == "Employee" && !restaurant.Employees.Any(e => e.UserId == requestingUserId))
+        // throw new ForbiddenException("You are not employed at this restaurant.");
+    }
+
+
     public async Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto)
     {
         var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -81,12 +165,18 @@ public class OrderService : IOrderService
 
         if (order.OrderStatus != OrderStatus.Delivered)
         {
-            throw new BadRequestException("You can not leave review for this order.");
+            throw new BadRequestException("You cannot leave a review for this order.");
         }
 
         if (order.CustomerId != customerId)
         {
-            throw new ForbiddenException("You can not leave review for this order.");
+            throw new ForbiddenException("You cannot leave a review for this order.");
+        }
+
+        var existingReview = await _orderRepository.GetReviewByOrderId(orderId);
+        if (existingReview != null)
+        {
+            throw new BadRequestException("You already reviewed this order.");
         }
 
         var review = new OrderReview
@@ -95,7 +185,7 @@ public class OrderService : IOrderService
             RestaurantComment = orderReviewDto.RestaurantComment,
             CourierGrade = orderReviewDto.CourierGrade,
             CourierComment = orderReviewDto.CourierComment,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             OrderId = orderId,
             CustomerId = customerId,
             RestaurantId = order.RestaurantId,
