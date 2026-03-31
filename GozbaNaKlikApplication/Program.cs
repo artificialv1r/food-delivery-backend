@@ -103,6 +103,7 @@ builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderReviewRepository, OrderReviewRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 var app = builder.Build();

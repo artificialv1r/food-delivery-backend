@@ -16,6 +16,17 @@ public class OrderRepository : IOrderRepository
         _context = context;
     }
 
+    public async Task<Order> GetOrderByIdAsync(int orderId)
+    {
+        return await _context.Orders
+            .Include(o => o.Restaurant)
+            .Include(o => o.CourierProfile)
+            .Include(o => o.CustomerProfile)
+            .Include(o => o.MealsOrdered)
+                .ThenInclude(om => om.Meal)
+            .Include(o => o.OrderReview)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
     public async Task<Order> CreateOrder(Order order)
     {
         _context.Orders.Add(order);
@@ -91,5 +102,4 @@ public class OrderRepository : IOrderRepository
             .ThenInclude(om => om.Meal)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
-
 }

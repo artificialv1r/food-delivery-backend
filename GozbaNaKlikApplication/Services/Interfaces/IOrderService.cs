@@ -11,4 +11,6 @@ public interface IOrderService
     Task<ShowOrderDto> CancelOrder(int orderId, int requestingUserId, string role);
     Task<List<ShowOrderDto>> GetAcceptedOrdersByRestaurant(int restaurantId, int requestingUserId, string role);
     Task<List<ShowOrderDto>> GetCanceledOrdersByRestaurant(int restaurantId, int requestingUserId, string role);
+    Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto);
+
 }
