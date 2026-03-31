@@ -69,6 +69,15 @@ public class OrderService : IOrderService
         var createdOrder = await _orderRepository.CreateOrder(order);
         return _mapper.Map<ShowOrderDto>(createdOrder);
     }
+
+    public async Task<ShowCourierOrderDto?> GetActiveCourierOrder(int courierId)
+    {
+        var order = await _orderRepository.GetActiveCourierOrder(courierId);
+        if(order == null)
+            return null;
+
+        return _mapper.Map<ShowCourierOrderDto>(order);
+    }
     
     public async Task<List<ShowOrderDto>> GetPendingOrdersByRestaurant(int restaurantId, int requestingUserId, string role)
     {
