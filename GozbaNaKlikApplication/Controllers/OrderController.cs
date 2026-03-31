@@ -42,6 +42,26 @@ public class OrderController : ControllerBase
     }
     
     [Authorize(Roles = "Owner,Employee")]
+    [HttpGet("restaurant/{restaurantId}/accepted")]
+    public async Task<IActionResult> GetAcceptedOrders(int restaurantId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.GetAcceptedOrdersByRestaurant(restaurantId, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpGet("restaurant/{restaurantId}/canceled")]
+    public async Task<IActionResult> GetCanceledOrders(int restaurantId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.GetCanceledOrdersByRestaurant(restaurantId, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
     [HttpPatch("{orderId}/accept")]
     public async Task<IActionResult> AcceptOrder(int orderId, [FromBody] AcceptOrderDto acceptOrderDto)
     {
