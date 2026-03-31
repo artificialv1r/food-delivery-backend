@@ -47,4 +47,59 @@ public class OrderController : ControllerBase
     }
 
 
+    
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpGet("restaurant/{restaurantId}/pending")]
+    public async Task<IActionResult> GetPendingOrders(int restaurantId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.GetPendingOrdersByRestaurant(restaurantId, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpGet("restaurant/{restaurantId}/accepted")]
+    public async Task<IActionResult> GetAcceptedOrders(int restaurantId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.GetAcceptedOrdersByRestaurant(restaurantId, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpGet("restaurant/{restaurantId}/canceled")]
+    public async Task<IActionResult> GetCanceledOrders(int restaurantId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.GetCanceledOrdersByRestaurant(restaurantId, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpPatch("{orderId}/accept")]
+    public async Task<IActionResult> AcceptOrder(int orderId, [FromBody] AcceptOrderDto acceptOrderDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+ 
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.AcceptOrder(orderId, acceptOrderDto, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpPatch("{orderId}/cancel")]
+    public async Task<IActionResult> CancelOrder(int orderId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.CancelOrder(orderId, userId, role));
+    }
 }

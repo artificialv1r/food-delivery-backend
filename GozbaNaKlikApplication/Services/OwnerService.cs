@@ -21,11 +21,6 @@ public class OwnerService : IOwnerService
 
     public async Task<OwnerProfile> AddOwnerAsync(OwnerProfile owner)
     {
-        var existing = await _userRepository.GetByUsername(owner.User.Username);
-        if (existing != null)
-        {
-            throw new BadRequestException("This user already exists");
-        }
         return await _ownerRepository.AddNewOwnerAsync(owner);
     }
 }
