@@ -1,3 +1,4 @@
+using GozbaNaKlikApplication.DTOs.Courier;
 using GozbaNaKlikApplication.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderMeal> OrderMeals { get; set; }
     public DbSet<OrderReview> OrderReviews { get; set; }
+    public DbSet<CourierWorkingHours> CourierWorkingHours { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -176,7 +178,18 @@ public class AppDbContext : DbContext
             .ToTable(t => t.HasCheckConstraint(
                 "CK_OrderReview_Grades",
                 "\"RestaurantGrade\" BETWEEN 1 AND 5 AND \"CourierGrade\" BETWEEN 1 AND 5"));
-            
+
+        //Courire and Courire working hours
+        modelBuilder.Entity<CourierProfile>()
+            .HasMany(c => c.Orders);
+
+        modelBuilder.Entity<CourierWorkingHours>()
+            .HasOne(c => c.CourierProfile)
+            .WithMany(c => c.CourierWorkingHours)
+            .HasForeignKey(c => c.CourierId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+
         modelBuilder.Entity<User>()
             .HasData(new User { Id = 1, Username = "Admin1", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Aleksandar", Surname = "Popov", Email = "aleksandarpopov@gmail.com", Role = Models.Enums.UserRole.Administrator },
                      new User { Id = 2, Username = "Admin2", PasswordHash = "$2a$11$Z/QwBhXbDM1i8YdaUyJCa.ySiEr9Pk7RulGvrN2WdyMauTeEcvdNy", Name = "Nikola", Surname = "Popovski", Email = "nikolapopovski@gmail.com", Role = Models.Enums.UserRole.Administrator },

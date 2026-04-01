@@ -1,6 +1,7 @@
 using GozbaNaKlikApplication.Data;
 using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace GozbaNaKlikApplication.Repositories;
 
@@ -19,4 +20,17 @@ public class CourierRepository : ICourierRepository
         await _context.SaveChangesAsync();
         return courier;
     }
+
+    public async Task<CourierProfile> GetCourierByIdAsync(int id)
+    {
+        return await _context.Couriers
+                .FirstOrDefaultAsync(c => c.UserId == id);
+    }
+    public async Task<CourierWorkingHours> AddCourireWorkingHoursAsync(CourierWorkingHours courierWorkingHours)
+    {
+        _context.CourierWorkingHours.Add(courierWorkingHours);
+        await _context.SaveChangesAsync();
+        return courierWorkingHours;
+    }
+
 }

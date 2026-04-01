@@ -1,6 +1,7 @@
 using AutoMapper;
 using GozbaNaKlikApplication.DTOs.Address;
 using GozbaNaKlikApplication.DTOs.Auth;
+using GozbaNaKlikApplication.DTOs.Courier;
 using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.DTOs.Orders;
 using GozbaNaKlikApplication.DTOs.Restaurant;
@@ -59,5 +60,6 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CustomerEmail, opt => opt.MapFrom(src => src.CustomerProfile.User.Email))
             .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString())); 
 
+        CreateMap<CourierWorkingHours, CourierWorkingHoursDto>().ReverseMap();
     }
 }
