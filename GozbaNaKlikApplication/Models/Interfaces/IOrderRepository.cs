@@ -1,4 +1,5 @@
 using GozbaNaKlikApplication.DTOs.Orders;
+using GozbaNaKlikApplication.Models.Enums;
 
 namespace GozbaNaKlikApplication.Models.Interfaces;
 
@@ -12,4 +13,5 @@ public interface IOrderRepository
     Task<List<Order>> GetAcceptedOrdersByRestaurant(int restaurantId);
     Task<List<Order>> GetCanceledOrdersByRestaurant(int restaurantId);
     Task<Order> GetOrderByIdAsync(int orderId);
+    Task<List<Order>> GetOrdersByCustomerId(int customerId, OrderStatus? status);
 }

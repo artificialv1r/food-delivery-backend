@@ -164,7 +164,6 @@ public class OrderService : IOrderService
         // throw new ForbiddenException("You are not employed at this restaurant.");
     }
 
-
     public async Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto)
     {
         var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -206,5 +205,11 @@ public class OrderService : IOrderService
         var createdReview = await _orderReviewRepository.CreateOrderReviewAsync(review);
 
         return _mapper.Map<OrderReviewDto>(createdReview);
+    }
+
+    public async Task<List<ShowOrderDto>> GetOrdersByCustomerId(int customerId, OrderStatus? status)
+    {
+        var orders = await _orderRepository.GetOrdersByCustomerId(customerId, status);
+        return _mapper.Map<List<ShowOrderDto>>(orders);
     }
 }
