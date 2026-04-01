@@ -1,4 +1,5 @@
 using GozbaNaKlikApplication.DTOs.Orders;
+using GozbaNaKlikApplication.Models.Enums;
 
 namespace GozbaNaKlikApplication.Services.Interfaces;
 
@@ -12,5 +13,6 @@ public interface IOrderService
     Task<List<ShowOrderDto>> GetAcceptedOrdersByRestaurant(int restaurantId, int requestingUserId, string role);
     Task<List<ShowOrderDto>> GetCanceledOrdersByRestaurant(int restaurantId, int requestingUserId, string role);
     Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto);
+    Task<List<ShowOrderDto>> GetOrdersByCustomerId(int customerId, OrderStatus? status);
 
 }

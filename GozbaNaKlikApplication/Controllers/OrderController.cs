@@ -1,7 +1,6 @@
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using GozbaNaKlikApplication.DTOs.Orders;
+using GozbaNaKlikApplication.Models.Enums;
 using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,12 +40,21 @@ public class OrderController : ControllerBase
         var order = await _orderService.GetActiveCourierOrder(courierId);
 
         if (order == null)
+        {
             return NoContent();
+        }
+            
 
         return Ok(order);
     }
 
-
+    [Authorize(Roles = "Customer")]
+    [HttpGet("my-orders")]
+    public async Task<IActionResult> GetOrdersByCustomerId([FromQuery] OrderStatus? status = null)
+    {
+        int customerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        return Ok(await _orderService.GetOrdersByCustomerId(customerId, status));
+    }
     
     [Authorize(Roles = "Owner,Employee")]
     [HttpGet("restaurant/{restaurantId}/pending")]

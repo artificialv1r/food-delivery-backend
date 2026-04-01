@@ -38,8 +38,6 @@ public class AdministratorService : IAdministratorService
             throw new BadRequestException("This user already exists");
         }
 
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
-
         User newUser = await _userService.AddUserAsync(user);
 
         switch (user.Role)
