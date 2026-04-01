@@ -33,8 +33,8 @@ public class UserService: IUserService
     }
     public async Task<User> Login(string username, string password)
     {
-        User user = await _userRepository.GetByUsername(username);
-
+        User? user = await _userRepository.GetByUsername(username);
+        
         if (user == null)
         {
             throw new BadRequestException("Invalid username or password");
@@ -69,9 +69,12 @@ public class UserService: IUserService
 
         User newUser = await _userRepository.AddNewUserAsync(user);
 
-        CustomerProfile customer = new CustomerProfile { UserId = newUser.Id };
-        await _customerService.AddCustomerAsync(customer);
-
+        if (user.Role == UserRole.Customer)
+        {
+            CustomerProfile customer = new CustomerProfile { UserId = newUser.Id };
+            await _customerService.AddCustomerAsync(customer);
+        }
+        
         return newUser;
     }
     

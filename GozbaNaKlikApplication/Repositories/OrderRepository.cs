@@ -103,4 +103,26 @@ public class OrderRepository : IOrderRepository
             .ThenInclude(om => om.Meal)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
+
+    public async Task<List<Order>> GetOrdersByCustomerId(int customerId, OrderStatus? status = null)
+    {
+        var query = _context.Orders
+            .Where(o => o.CustomerId == customerId);
+
+        query = status switch
+        {
+            OrderStatus.Delivered => query.Where(o => o.OrderStatus == OrderStatus.Delivered),
+            OrderStatus.Canceled  => query.Where(o => o.OrderStatus == OrderStatus.Canceled),
+            null                  => query.Where(o => o.OrderStatus != OrderStatus.Canceled &&
+                                                      o.OrderStatus != OrderStatus.Delivered),
+            _                     => query.Where(o => o.OrderStatus == status)
+        };
+
+        return await query
+            .Include(o => o.Restaurant)
+            .Include(o => o.MealsOrdered)
+            .ThenInclude(om => om.Meal)
+            .OrderBy(o => o.CreatedAt)
+            .ToListAsync();
+    }
 }
