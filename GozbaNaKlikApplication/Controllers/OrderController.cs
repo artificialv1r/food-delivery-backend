@@ -111,6 +111,21 @@ public class OrderController : ControllerBase
         return Ok(await _orderService.CancelOrder(orderId, userId, role));
     }
 
+    [Authorize(Roles = "Owner,Employee")]
+    [HttpPatch("{orderId}/assignCourier")]
+    public async Task<IActionResult> AssignCourierToOrderAsync(int orderId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+
+        return Ok(await _orderService.AssignCourierToOrderAsync(orderId,userId, role));
+    }
+
     [Authorize(Roles = "Customer")]
     [HttpPost("{orderId}/review")]
     public async Task<ActionResult> CreateOrderReviewAsync([FromRoute] int orderId, OrderReviewDto orderReviewDto)

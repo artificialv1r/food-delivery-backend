@@ -26,10 +26,15 @@ public class CourierService : ICourierService
     {
         return await _courierRepository.AddNewCourierAsync(courier);
     }
-
+    public async Task<CourierProfile> GetAvailableCourierAsync()
+    {
+        var courier =  await _courierRepository.GetAvailableCourierAsync();
+        return courier;
+    }
     public async Task<CourierWorkingHoursDto> AddCourireWorkingHoursAsync(CourierWorkingHoursDto courierWorkingHoursDto, int courierId)
     {
         var courier = await _courierRepository.GetCourierByIdAsync(courierId);
+        double totalWeekHours = 0;
         if (courier == null)
         {
             throw new NotFoundException(courierId);
@@ -46,9 +51,16 @@ public class CourierService : ICourierService
             throw new BadRequestException("Daily shift can't be over 10 hours.");
         }
 
-        double totalWeekHours = courier.CourierWorkingHours
+        if (courier.CourierWorkingHours == null || !courier.CourierWorkingHours.Any())
+        {
+            totalWeekHours = 0;
+        }
+        else
+        {
+             totalWeekHours = courier.CourierWorkingHours
             .Where(c => c.DayOfWeek >= DayOfWeek.Monday && c.DayOfWeek <= DayOfWeek.Sunday)
             .Sum(c => (c.EndTime - c.StartTime).TotalHours);
+        }
 
         if (totalWeekHours > 40)
         {
@@ -62,5 +74,9 @@ public class CourierService : ICourierService
 
         await _courierRepository.AddCourireWorkingHoursAsync(courierWorkingHours);
         return _mapper.Map<CourierWorkingHoursDto>(courierWorkingHours);
+    }
+    public async Task<CourierProfile> UpdateCourier(CourierProfile courier)
+    {
+        return await _courierRepository.UpdateCourier(courier);
     }
 }

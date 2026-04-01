@@ -14,14 +14,16 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderReviewRepository _orderReviewRepository;
     private readonly IRestaurantService _restaurantService;
+    private readonly ICourierService _courierService;
     private readonly IMapper _mapper;
 
 
-    public OrderService(IOrderRepository orderRepository,IOrderReviewRepository orderReviewRepository,IRestaurantService restaurantService, IMapper mapper)
+    public OrderService(IOrderRepository orderRepository,IOrderReviewRepository orderReviewRepository,IRestaurantService restaurantService, IMapper mapper, ICourierService courierService)
     {
         _orderRepository = orderRepository;
         _orderReviewRepository = orderReviewRepository;
         _restaurantService = restaurantService;
+        _courierService = courierService;
         _mapper = mapper;
     }
 
@@ -118,7 +120,6 @@ public class OrderService : IOrderService
 
         order.OrderStatus = OrderStatus.Accepted;
         order.EstimatedReadyAt = acceptOrderDto.EstimatedReadyAt;
-
         var updatedOrder = await _orderRepository.UpdateOrder(order);
         return _mapper.Map<ShowOrderDto>(updatedOrder);
     }
@@ -211,5 +212,24 @@ public class OrderService : IOrderService
     {
         var orders = await _orderRepository.GetOrdersByCustomerId(customerId, status);
         return _mapper.Map<List<ShowOrderDto>>(orders);
+    }
+
+    public async Task<ShowOrderDto> AssignCourierToOrderAsync(int orderId, int requestingUserId, string role)
+    {
+        var order = await GetOrderOrThrow(orderId);
+        await AuthorizeRestaurantAccess(order.RestaurantId, requestingUserId, role);
+
+        if (order.OrderStatus != OrderStatus.Accepted)
+        {
+            throw new BadRequestException($"Only orders with status accepted can be assign to courier. Current status: {order.OrderStatus}");
+        }
+        var courier = await _courierService.GetAvailableCourierAsync();
+        order.OrderStatus = OrderStatus.PickupInProgress;
+        order.CourierId = courier.UserId;
+        var updatedOrder = await _orderRepository.UpdateOrder(order);
+        courier.IsAvailable = false;
+        await _courierService.UpdateCourier(courier);
+
+        return _mapper.Map<ShowOrderDto>(updatedOrder);
     }
 }

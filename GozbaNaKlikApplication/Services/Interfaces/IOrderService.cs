@@ -14,5 +14,6 @@ public interface IOrderService
     Task<List<ShowOrderDto>> GetCanceledOrdersByRestaurant(int restaurantId, int requestingUserId, string role);
     Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto);
     Task<List<ShowOrderDto>> GetOrdersByCustomerId(int customerId, OrderStatus? status);
+    Task<ShowOrderDto> AssignCourierToOrderAsync(int orderId, int requestingUserId, string role);
 
 }

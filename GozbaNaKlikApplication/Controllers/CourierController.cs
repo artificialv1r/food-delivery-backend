@@ -23,7 +23,8 @@ namespace GozbaNaKlikApplication.Controllers
         public async Task<ActionResult<CourierWorkingHoursDto>> AddCourireWorkingHoursAsync([FromBody] CourierWorkingHoursDto courireWorkingHoursDto)
         {
             var coruierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            return Ok(_courierService.AddCourireWorkingHoursAsync(courireWorkingHoursDto, coruierId));
+            var result = await _courierService.AddCourireWorkingHoursAsync(courireWorkingHoursDto, coruierId);
+            return Ok(result);
         }
     }
 }

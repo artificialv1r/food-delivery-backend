@@ -21,6 +21,19 @@ public class CourierRepository : ICourierRepository
         return courier;
     }
 
+    public async Task<CourierProfile> UpdateCourier(CourierProfile courier)
+    {
+        _context.Couriers.Update(courier);
+         await _context.SaveChangesAsync();
+        return courier;
+    }
+    public async Task<CourierProfile> GetAvailableCourierAsync()
+    {
+        var courier = await _context.Couriers
+           .Where(c => c.Status == true && c.IsAvailable == true)
+           .FirstOrDefaultAsync();
+        return courier;
+    }
     public async Task<CourierProfile> GetCourierByIdAsync(int id)
     {
         return await _context.Couriers
