@@ -29,6 +29,11 @@ namespace GozbaNaKlikApplication.Controllers
         }
 
         [Authorize(Roles = "Courier")]
+        [HttpPut("working-hours/{id}")]
+        public async Task<ActionResult<UpdateCourierWorkingHoursDto>> UpdateCourierWorkingHoursDto([FromBody] UpdateCourierWorkingHoursDto updateCourierWorkingHoursDto, int id)
+        {
+            var coruierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await _courierService.UpdateCourierWorkingHoursAsync(updateCourierWorkingHoursDto, coruierId, id);
         [HttpGet("filter")]
         public async Task<ActionResult<PaginatedList<ShowDeliveredOrderDto>>> GetFilteredAndSortedDeliveredOrdersAsync([FromQuery] OrderSearchQuery orderSearchQuery, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {

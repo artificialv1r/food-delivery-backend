@@ -49,6 +49,17 @@ public class CourierRepository : ICourierRepository
         return courierWorkingHours;
     }
 
+    public async Task<CourierWorkingHours> GetCourierWorkingHoursByIdAsync(int id, int workingHoursId)
+    {
+        return await _context.CourierWorkingHours
+            .FirstOrDefaultAsync(c => c.CourierId == id && c.Id == workingHoursId);
+    }
+
+    public async Task<CourierWorkingHours> UpdateCourierWorkingHoursAsync(CourierWorkingHours courierWorkingHours)
+    {
+        _context.CourierWorkingHours.Update(courierWorkingHours);
+        await _context.SaveChangesAsync();
+        return courierWorkingHours;
     public async Task<PaginatedList<Order>> GetFilteredAndSortedDeliveredOrdersAsync(int courierId, OrderSearchQuery orderSearchQuery, int page = 1, int pageSize = 5)
     {
         IQueryable<Order> orders = _context.Orders
