@@ -63,5 +63,6 @@ public class MappingProfile : Profile
 
         CreateMap<CourierWorkingHours, CourierWorkingHoursDto>().ReverseMap();
         CreateMap<SurveyAnswer, SurveyAnswerDto>().ReverseMap();
+        CreateMap<CourierWorkingHours, UpdateCourierWorkingHoursDto>().ReverseMap();
     }
 }

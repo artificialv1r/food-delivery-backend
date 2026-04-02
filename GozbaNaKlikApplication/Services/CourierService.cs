@@ -82,4 +82,17 @@ public class CourierService : ICourierService
     {
         return await _courierRepository.UpdateCourier(courier);
     }
+
+    public async Task<UpdateCourierWorkingHoursDto> UpdateCourierWorkingHoursAsync(UpdateCourierWorkingHoursDto courierWorkingHoursDto, int courierId, int workingHoursId)
+    {
+        var courier = await _courierRepository.GetCourierByIdAsync(courierId);
+        if (courier == null) { throw new NotFoundException(courierId); }
+
+        var workingHours = await _courierRepository.GetCourierWorkingHoursByIdAsync(courierId, workingHoursId);
+        if(workingHours == null) { throw new NotFoundException(courierId); }
+        workingHours.StartTime = courierWorkingHoursDto.StartTime;
+        workingHours.EndTime = courierWorkingHoursDto.EndTime;
+        await _courierRepository.UpdateCourierWorkingHoursAsync(workingHours);
+        return _mapper.Map<UpdateCourierWorkingHoursDto>(workingHours);
+    }
 }
