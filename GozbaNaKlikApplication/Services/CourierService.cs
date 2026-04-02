@@ -79,4 +79,15 @@ public class CourierService : ICourierService
     {
         return await _courierRepository.UpdateCourier(courier);
     }
+    public async Task<CourierProfile> UpdateCourierLocationAsync(int courierId, double latitude, double longitude)
+    {
+        var courier = await _courierRepository.GetCourierByIdAsync(courierId);
+        if (courier == null)
+            throw new NotFoundException(courierId);
+
+        courier.CurrentLatitude = latitude;
+        courier.CurrentLongitude = longitude;
+
+        return await _courierRepository.UpdateCourier(courier);
+    }
 }

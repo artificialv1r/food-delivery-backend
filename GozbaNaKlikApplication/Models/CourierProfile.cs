@@ -8,5 +8,9 @@
         public bool IsAvailable { get; set; } = true;
         public List<Order> Orders { get; set; }
         public List<CourierWorkingHours> CourierWorkingHours { get; set; }
+
+
+        public double? CurrentLatitude { get; set; }
+        public double? CurrentLongitude { get; set; }
     }
 }
