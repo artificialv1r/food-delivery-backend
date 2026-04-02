@@ -11,5 +11,6 @@ namespace GozbaNaKlikApplication.Services.Interfaces
         Task<CourierProfile> UpdateCourier(CourierProfile courier);
         Task<CourierProfile> GetCourierById(int id);
         Task<UpdateCourierWorkingHoursDto> UpdateCourierWorkingHoursAsync(UpdateCourierWorkingHoursDto courierWorkingHours, int courierId, int workingHoursId);
+        Task<PaginatedList<ShowDeliveredOrderDto>> GetFilteredAndSortedDeliveredOrdersAsync(int courierId, OrderSearchQuery orderSearchQuery, int page = 1, int pageSize = 5);
     }
 }
