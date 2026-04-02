@@ -126,6 +126,24 @@ public class OrderController : ControllerBase
         return Ok(await _orderService.AssignCourierToOrderAsync(orderId,userId, role));
     }
 
+    [Authorize(Roles = "Courier")]
+    [HttpPatch("{orderId}/pickUp")]
+    public async Task<IActionResult> PickUpOrderAsync(int orderId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        return Ok(await _orderService.PickUpOrderAsync(orderId, userId));
+    }
+
+    [Authorize(Roles = "Courier")]
+    [HttpPatch("{orderId}/delivered")]
+    public async Task<IActionResult> OrderDeliveredAsync(int orderId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        return Ok(await _orderService.OrderDeliveredAsync(orderId, userId));
+    }
+
     [Authorize(Roles = "Customer")]
     [HttpPost("{orderId}/review")]
     public async Task<ActionResult> CreateOrderReviewAsync([FromRoute] int orderId, OrderReviewDto orderReviewDto)

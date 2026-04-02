@@ -21,7 +21,10 @@ public class CourierService : ICourierService
         _userRepository = userRepository;
         _mapper = mapper;
     }
-
+    public async Task<CourierProfile> GetCourierById(int id)
+    {
+        return await _courierRepository.GetCourierByIdAsync(id);
+    }
     public async Task<CourierProfile> AddCourierAsync(CourierProfile courier)
     {
         return await _courierRepository.AddNewCourierAsync(courier);
