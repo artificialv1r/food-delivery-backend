@@ -18,7 +18,7 @@ public class OrderService : IOrderService
     private readonly IMapper _mapper;
 
 
-    public OrderService(IOrderRepository orderRepository,IOrderReviewRepository orderReviewRepository,IRestaurantService restaurantService, IMapper mapper, ICourierService courierService)
+    public OrderService(IOrderRepository orderRepository, IOrderReviewRepository orderReviewRepository, IRestaurantService restaurantService, IMapper mapper, ICourierService courierService)
     {
         _orderRepository = orderRepository;
         _orderReviewRepository = orderReviewRepository;
@@ -77,12 +77,12 @@ public class OrderService : IOrderService
     public async Task<ShowCourierOrderDto?> GetActiveCourierOrder(int courierId)
     {
         var order = await _orderRepository.GetActiveCourierOrder(courierId);
-        if(order == null)
+        if (order == null)
             return null;
 
         return _mapper.Map<ShowCourierOrderDto>(order);
     }
-    
+
     public async Task<List<ShowOrderDto>> GetPendingOrdersByRestaurant(int restaurantId, int requestingUserId, string role)
     {
         await AuthorizeRestaurantAccess(restaurantId, requestingUserId, role);
@@ -231,5 +231,64 @@ public class OrderService : IOrderService
         await _courierService.UpdateCourier(courier);
 
         return _mapper.Map<ShowOrderDto>(updatedOrder);
+    }
+
+    public async Task<ShowOrderDto> PickUpOrderAsync(int orderId, int userId)
+    {
+        var order = await GetOrderOrThrow(orderId);
+
+        if (order.CourierId != userId)
+        {
+            throw new BadRequestException("This courier is not assigned to this order.");
+        }
+
+        if (order.OrderStatus != OrderStatus.PickupInProgress)
+        {
+            throw new BadRequestException($"Only orders with status PickupInProgress can be picked up. Current status: {order.OrderStatus}");
+        }
+
+        DateTime pickedUpAt = DateTime.UtcNow;
+        if (pickedUpAt < order.EstimatedReadyAt)
+        {
+            throw new BadRequestException("Order is not ready yet.");
+        }
+
+        order.OrderStatus = OrderStatus.DeliveryInProgress;
+        order.PickedUpAt = pickedUpAt;
+        var updateOrder = await _orderRepository.UpdateOrder(order);
+        return _mapper.Map<ShowOrderDto>(updateOrder);
+    }
+
+    public async Task<ShowOrderDto> OrderDeliveredAsync(int orderId, int userId)
+    {
+        var order = await GetOrderOrThrow(orderId);
+
+        if (order.CourierId != userId)
+        {
+            throw new BadRequestException("This courier is not assigned to this order.");
+        }
+
+        if (order.OrderStatus != OrderStatus.DeliveryInProgress)
+        {
+            throw new BadRequestException($"Only orders with status DeliveryInProgress can be delivered. Current status: {order.OrderStatus}");
+        }
+
+        DateTime deliveredAt = DateTime.UtcNow;
+        if (order.PickedUpAt == null)
+        {
+            throw new BadRequestException("Order is not picked up yet.");
+        }
+        if (deliveredAt < order.PickedUpAt)
+        {
+            throw new BadRequestException("Invalid delivery time.");
+        }
+
+        order.OrderStatus = OrderStatus.Delivered;
+        order.DeliveredAt = deliveredAt;
+        var updateOrder = await _orderRepository.UpdateOrder(order);
+        var courier = await _courierService.GetCourierById(userId);
+        courier.IsAvailable = true;
+        await _courierService.UpdateCourier(courier);
+        return _mapper.Map<ShowOrderDto>(updateOrder);
     }
 }

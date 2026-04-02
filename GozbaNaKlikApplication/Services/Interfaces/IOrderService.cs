@@ -15,5 +15,7 @@ public interface IOrderService
     Task<OrderReviewDto> CreateOrderReviewAsync(int orderId, int customerId, OrderReviewDto orderReviewDto);
     Task<List<ShowOrderDto>> GetOrdersByCustomerId(int customerId, OrderStatus? status);
     Task<ShowOrderDto> AssignCourierToOrderAsync(int orderId, int requestingUserId, string role);
+    Task<ShowOrderDto> PickUpOrderAsync(int orderId, int userId);
+    Task<ShowOrderDto> OrderDeliveredAsync(int orderId, int userId);
 
 }
