@@ -6,6 +6,7 @@ using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
 using GozbaNaKlikApplication.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GozbaNaKlikApplication.Services;
 
@@ -81,5 +82,13 @@ public class CourierService : ICourierService
     public async Task<CourierProfile> UpdateCourier(CourierProfile courier)
     {
         return await _courierRepository.UpdateCourier(courier);
+    }
+
+    public async Task<PaginatedList<ShowDeliveredOrderDto>> GetFilteredAndSortedDeliveredOrdersAsync(int courierId, OrderSearchQuery orderSearchQuery, int page = 1, int pageSize = 5)
+    {
+        var orders = await _courierRepository.GetFilteredAndSortedDeliveredOrdersAsync(courierId, orderSearchQuery, page, pageSize);
+        var ordersDto = orders.Items
+            .Select(_mapper.Map<ShowDeliveredOrderDto>).ToList();
+        return new PaginatedList<ShowDeliveredOrderDto>(ordersDto, orders.Count, orders.PageIndex, pageSize);
     }
 }
