@@ -60,6 +60,8 @@ public class CourierRepository : ICourierRepository
         _context.CourierWorkingHours.Update(courierWorkingHours);
         await _context.SaveChangesAsync();
         return courierWorkingHours;
+    }
+
     public async Task<PaginatedList<Order>> GetFilteredAndSortedDeliveredOrdersAsync(int courierId, OrderSearchQuery orderSearchQuery, int page = 1, int pageSize = 5)
     {
         IQueryable<Order> orders = _context.Orders
