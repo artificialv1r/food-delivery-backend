@@ -12,6 +12,7 @@ public interface IOrderRepository
     Task<Order?> GetOrderById(int orderId);
     Task<List<Order>> GetAcceptedOrdersByRestaurant(int restaurantId);
     Task<List<Order>> GetCanceledOrdersByRestaurant(int restaurantId);
+    Task<List<Order>> GetDeliveredOrdersByRestaurant(int restaurantId);
     Task<Order> GetOrderByIdAsync(int orderId);
     Task<List<Order>> GetOrdersByCustomerId(int customerId, OrderStatus? status);
 }

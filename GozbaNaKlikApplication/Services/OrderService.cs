@@ -107,6 +107,14 @@ public class OrderService : IOrderService
         return _mapper.Map<List<ShowOrderDto>>(orders);
     }
 
+    public async Task<List<ShowOrderDto>> GetDeliveredOrdersByRestaurant(int restaurantId, int userId, string role)
+    {
+        await AuthorizeRestaurantAccess(restaurantId, userId, role);
+
+        var orders = await _orderRepository.GetDeliveredOrdersByRestaurant(restaurantId);
+        return _mapper.Map<List<ShowOrderDto>>(orders);
+    }
+
     public async Task<ShowOrderDto> AcceptOrder(int orderId, AcceptOrderDto acceptOrderDto, int requestingUserId, string role)
     {
         var order = await GetOrderOrThrow(orderId);

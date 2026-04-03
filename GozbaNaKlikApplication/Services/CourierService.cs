@@ -76,6 +76,8 @@ public class CourierService : ICourierService
         var courierWorkingHours = _mapper.Map<CourierWorkingHours>(courierWorkingHoursDto);
         courierWorkingHours.CourierId = courierId;
 
+        courier.IsAvailable = true;
+        await UpdateCourier(courier);
         await _courierRepository.AddCourireWorkingHoursAsync(courierWorkingHours);
         return _mapper.Map<CourierWorkingHoursDto>(courierWorkingHours);
     }
