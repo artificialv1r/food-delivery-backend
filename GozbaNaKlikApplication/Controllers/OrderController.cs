@@ -87,6 +87,16 @@ public class OrderController : ControllerBase
     }
     
     [Authorize(Roles = "Owner,Employee")]
+    [HttpGet("restaurant/{restaurantId}/delivered")]
+    public async Task<IActionResult> GetDeliveredOrders(int restaurantId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var role = User.FindFirstValue(ClaimTypes.Role)!;
+ 
+        return Ok(await _orderService.GetDeliveredOrdersByRestaurant(restaurantId, userId, role));
+    }
+    
+    [Authorize(Roles = "Owner,Employee")]
     [HttpPatch("{orderId}/accept")]
     public async Task<IActionResult> AcceptOrder(int orderId, [FromBody] AcceptOrderDto acceptOrderDto)
     {

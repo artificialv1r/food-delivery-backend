@@ -69,7 +69,7 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.Restaurant)
             .Include(o => o.MealsOrdered)
             .ThenInclude(om => om.Meal)
-            .OrderBy(o => o.CreatedAt)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
     
@@ -80,7 +80,7 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.Restaurant)
             .Include(o => o.MealsOrdered)
             .ThenInclude(om => om.Meal)
-            .OrderBy(o => o.CreatedAt)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
     
@@ -91,7 +91,18 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.Restaurant)
             .Include(o => o.MealsOrdered)
             .ThenInclude(om => om.Meal)
-            .OrderBy(o => o.CreatedAt)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+    
+    public async Task<List<Order>> GetDeliveredOrdersByRestaurant(int restaurantId)
+    {
+        return await _context.Orders
+            .Where(o => o.RestaurantId == restaurantId && o.OrderStatus == OrderStatus.Delivered)
+            .Include(o => o.Restaurant)
+            .Include(o => o.MealsOrdered)
+            .ThenInclude(om => om.Meal)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
     
@@ -122,7 +133,7 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.Restaurant)
             .Include(o => o.MealsOrdered)
             .ThenInclude(om => om.Meal)
-            .OrderBy(o => o.CreatedAt)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
 }

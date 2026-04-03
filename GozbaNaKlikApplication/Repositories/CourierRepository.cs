@@ -33,7 +33,7 @@ public class CourierRepository : ICourierRepository
     public async Task<CourierProfile> GetAvailableCourierAsync()
     {
         var courier = await _context.Couriers
-           .Where(c => c.Status == true && c.IsAvailable == true)
+           .Where(c => c.IsAvailable == true)
            .FirstOrDefaultAsync();
         return courier;
     }
