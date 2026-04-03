@@ -41,7 +41,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.RestaurantName,
                 opt => opt.MapFrom(src => src.Restaurant.Name))
             .ForMember(dest => dest.Status,
-                opt => opt.MapFrom(src => src.OrderStatus.ToString()));
+                opt => opt.MapFrom(src => src.OrderStatus.ToString()))
+            .ForMember(dest => dest.CourierName, opt => opt.MapFrom(src => src.CourierProfile.User.Name));
 
         CreateMap<OrderReview, OrderReviewDto>().ReverseMap();
 

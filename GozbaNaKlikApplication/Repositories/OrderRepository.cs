@@ -131,6 +131,7 @@ public class OrderRepository : IOrderRepository
 
         return await query
             .Include(o => o.Restaurant)
+            .Include(c => c.CourierProfile.User)
             .Include(o => o.MealsOrdered)
             .ThenInclude(om => om.Meal)
             .OrderByDescending(o => o.CreatedAt)

@@ -4,6 +4,7 @@ public class ShowOrderDto
 {
     public int Id { get; set; }
     public int RestaurantId { get; set; }
+    public string? CourierName { get; set; }
     public string RestaurantName { get; set; }
     public decimal TotalPrice { get; set; }
     public string Status { get; set; }
