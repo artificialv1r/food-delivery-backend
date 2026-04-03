@@ -4,6 +4,7 @@ using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace GozbaNaKlikApplication.Controllers
@@ -28,6 +29,14 @@ namespace GozbaNaKlikApplication.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles ="Courier")]
+        [HttpPatch("location")]
+        public async Task<IActionResult> UpdateLocation([FromBody] UpdateCourierLocationDto dto)
+        {
+            var courierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await _courierService.UpdateCourierLocationAsync(courierId, dto.Latitude, dto.Longitude);
+            return Ok(new { message = "Location updated.", dto.Latitude, dto.Longitude });
+        }
         [Authorize(Roles = "Courier")]
         [HttpPut("working-hours/{id}")]
         public async Task<ActionResult<UpdateCourierWorkingHoursDto>> UpdateCourierWorkingHoursDto(

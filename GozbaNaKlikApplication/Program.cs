@@ -1,4 +1,5 @@
 using GozbaNaKlikApplication.Data;
+using GozbaNaKlikApplication.Hubs;
 using GozbaNaKlikApplication.Middleware;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
@@ -74,7 +75,8 @@ builder.Services.AddCors(options =>
                 .WithOrigins("http://localhost:5174")
                 .WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -108,6 +110,10 @@ builder.Services.AddScoped<ISurveyService, SurveyService>();
 builder.Services.AddScoped<ISurveyRepository, SurveyRepository>();
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
+builder.Services.AddSignalR();
+builder.Services.AddHostedService<CourierLocationBackgroundService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -124,6 +130,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<TrackingHub>("/hubs/tracking");
 
 app.MapControllers();
 

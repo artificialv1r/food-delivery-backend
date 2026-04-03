@@ -3,6 +3,7 @@ using System;
 using GozbaNaKlikApplication.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GozbaNaKlikApplication.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260402211137_CourierTracking")]
+    partial class CourierTracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -408,50 +411,6 @@ namespace GozbaNaKlikApplication.Migrations
                     b.ToTable("Owners");
                 });
 
-            modelBuilder.Entity("GozbaNaKlikApplication.Models.Question", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Questions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Text = "How easy was it to navigate and use the platform?"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Text = "How satisfied are you with the ordering process?"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Text = "How would you rate the accuracy of your order?"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Text = "How satisfied are you with the responsiveness of support or staff?"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Text = "How enjoyable was your overall experience using the platform?"
-                        });
-                });
-
             modelBuilder.Entity("GozbaNaKlikApplication.Models.Restaurant", b =>
                 {
                     b.Property<int>("Id")
@@ -475,35 +434,6 @@ namespace GozbaNaKlikApplication.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Restaurants");
-                });
-
-            modelBuilder.Entity("GozbaNaKlikApplication.Models.SurveyAnswer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SurveyAnswers");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.User", b =>
@@ -771,25 +701,6 @@ namespace GozbaNaKlikApplication.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("GozbaNaKlikApplication.Models.SurveyAnswer", b =>
-                {
-                    b.HasOne("GozbaNaKlikApplication.Models.Question", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("GozbaNaKlikApplication.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GozbaNaKlikApplication.Models.CourierProfile", b =>
