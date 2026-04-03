@@ -1,4 +1,5 @@
 ﻿using GozbaNaKlikApplication.DTOs.Courier;
+using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +36,23 @@ namespace GozbaNaKlikApplication.Controllers
             var courierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             await _courierService.UpdateCourierLocationAsync(courierId, dto.Latitude, dto.Longitude);
             return Ok(new { message = "Location updated.", dto.Latitude, dto.Longitude });
+        }
+        [Authorize(Roles = "Courier")]
+        [HttpPut("working-hours/{id}")]
+        public async Task<ActionResult<UpdateCourierWorkingHoursDto>> UpdateCourierWorkingHoursDto(
+            [FromBody] UpdateCourierWorkingHoursDto updateCourierWorkingHoursDto, int id)
+        {
+            var coruierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await _courierService.UpdateCourierWorkingHoursAsync(updateCourierWorkingHoursDto, coruierId, id);
+            return Ok(result);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<PaginatedList<ShowDeliveredOrderDto>>> GetFilteredAndSortedDeliveredOrdersAsync([FromQuery] OrderSearchQuery orderSearchQuery, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+        {
+            var coruierId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await _courierService.GetFilteredAndSortedDeliveredOrdersAsync(coruierId, orderSearchQuery, page, pageSize);
+            return Ok(result);
         }
     }
 }

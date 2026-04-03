@@ -6,6 +6,7 @@ using GozbaNaKlikApplication.Models;
 using GozbaNaKlikApplication.Models.Interfaces;
 using GozbaNaKlikApplication.Repositories;
 using GozbaNaKlikApplication.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GozbaNaKlikApplication.Services;
 
@@ -21,7 +22,10 @@ public class CourierService : ICourierService
         _userRepository = userRepository;
         _mapper = mapper;
     }
-
+    public async Task<CourierProfile> GetCourierById(int id)
+    {
+        return await _courierRepository.GetCourierByIdAsync(id);
+    }
     public async Task<CourierProfile> AddCourierAsync(CourierProfile courier)
     {
         return await _courierRepository.AddNewCourierAsync(courier);
@@ -89,5 +93,34 @@ public class CourierService : ICourierService
         courier.CurrentLongitude = longitude;
 
         return await _courierRepository.UpdateCourier(courier);
+     }
+
+    public async Task<UpdateCourierWorkingHoursDto> UpdateCourierWorkingHoursAsync(
+        UpdateCourierWorkingHoursDto courierWorkingHoursDto, int courierId, int workingHoursId)
+    {
+        var courier = await _courierRepository.GetCourierByIdAsync(courierId);
+        if (courier == null)
+        {
+            throw new NotFoundException(courierId);
+        }
+
+        var workingHours = await _courierRepository.GetCourierWorkingHoursByIdAsync(courierId, workingHoursId);
+        if (workingHours == null)
+        {
+            throw new NotFoundException(courierId);
+        }
+
+        workingHours.StartTime = courierWorkingHoursDto.StartTime;
+        workingHours.EndTime = courierWorkingHoursDto.EndTime;
+        await _courierRepository.UpdateCourierWorkingHoursAsync(workingHours);
+        return _mapper.Map<UpdateCourierWorkingHoursDto>(workingHours);
+    }
+
+    public async Task<PaginatedList<ShowDeliveredOrderDto>> GetFilteredAndSortedDeliveredOrdersAsync(int courierId, OrderSearchQuery orderSearchQuery, int page = 1, int pageSize = 5)
+    {
+        var orders = await _courierRepository.GetFilteredAndSortedDeliveredOrdersAsync(courierId, orderSearchQuery, page, pageSize);
+        var ordersDto = orders.Items
+            .Select(_mapper.Map<ShowDeliveredOrderDto>).ToList();
+        return new PaginatedList<ShowDeliveredOrderDto>(ordersDto, orders.Count, orders.PageIndex, pageSize);
     }
 }

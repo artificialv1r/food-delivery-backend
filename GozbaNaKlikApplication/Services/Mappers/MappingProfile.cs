@@ -5,6 +5,7 @@ using GozbaNaKlikApplication.DTOs.Courier;
 using GozbaNaKlikApplication.DTOs.Meals;
 using GozbaNaKlikApplication.DTOs.Orders;
 using GozbaNaKlikApplication.DTOs.Restaurant;
+using GozbaNaKlikApplication.DTOs.Survey;
 using GozbaNaKlikApplication.Models;
 
 namespace GozbaNaKlikApplication.Services.Mappers;
@@ -61,5 +62,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString())); 
 
         CreateMap<CourierWorkingHours, CourierWorkingHoursDto>().ReverseMap();
+        CreateMap<SurveyAnswer, SurveyAnswerDto>().ReverseMap();
+        CreateMap<CourierWorkingHours, UpdateCourierWorkingHoursDto>().ReverseMap();
+        CreateMap<Order, ShowDeliveredOrderDto>()
+            .ForMember(dest => dest.Minutes, opt => opt.MapFrom(src => (src.DeliveredAt - src.PickedUpAt).Value.TotalMinutes))
+            .ReverseMap();
     }
 }
